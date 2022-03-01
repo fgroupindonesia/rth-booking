@@ -13,5 +13,9 @@ public class UserProfile {
     // 1 : management
     // 2 : client
 
+    // this is used for updating any admin accounts profile
+    public static int USER_ID = -1;
+
+
 
 }

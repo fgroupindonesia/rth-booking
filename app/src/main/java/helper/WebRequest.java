@@ -35,6 +35,8 @@ public class WebRequest extends AsyncTask<String, Integer, String> {
 	 boolean downloadStat = false;
 	 public Navigator webcall;
 	 private ProgressBar mPDialog;
+	 private final int  TIME_OUT_WAIT = 6500;
+
 	 // private static final String URL_ROOT_API = "http://api.fgroupindonesia.com/fgimobile";
 
 	 // for production purposes call below URL
@@ -216,11 +218,12 @@ public class WebRequest extends AsyncTask<String, Integer, String> {
 	protected String doInBackground(String... params) {
 		 try {
 
+
 		        url = new URL(targetURL);
 
 		        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-		        conn.setReadTimeout(5000);
-		        conn.setConnectTimeout(5000);
+		        conn.setReadTimeout(TIME_OUT_WAIT);
+		        conn.setConnectTimeout(TIME_OUT_WAIT);
 		        
 		        if(pilihanMethod==POST_METHOD){
 		        	conn.setRequestMethod("POST");	

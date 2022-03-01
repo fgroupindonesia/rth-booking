@@ -19,10 +19,13 @@
     <string name="text_tanggal_big">03 Februari 2022</string>
     <string name="text_nama_bulan_big">Februari 2022</string>
     <string name="text_jam_small">Jam</string>
+    <string name="text_booking_small">Booking</string>
+    <string name="text_pilih_small">Pilih</string>
     <string name="text_keterangan_small">Keterangan</string>
     <string name="text_tersedia_small">Tersedia</string>
     <string name="text_pilih_tersedia_small">Pilih salah satu jam yg tersedia</string>
     <string name="text_pilih_jadwal_small">Pilih tanggal yg akan di-set</string>
+    <string name="text_aktifkan_jam_jadwal">Aktifkan jam jadwal yg telah terisi</string>
     <string name="text_tidak_tersedia_small">Tidak Tersedia</string>
     <string name="text_hour_08">08:00</string>
     <string name="text_hour_10">10:00</string>
@@ -48,5 +51,29 @@
     <string name="text_legend_mulai_sesi">Terisi beberapa Jadwal </string>
     <string name="text_legend_semua_tidak">Semua Jadwal Sudah Penuh</string>
     <string name="text_legend_semua_ready">Semua Jadwal Siap Dipakai</string>
+    <string name="text_isian_keterangan">Isian keterangan</string>
+    <string name="text_label_profil_nama">Nama : </string>
+    <string name="text_label_profil_nama_hint">Tulis nama lengkap </string>
+    <string name="text_label_profil_kelamin">Kelamin : </string>
+    <string name="text_label_profil_alamat">Alamat : </string>
+    <string name="text_label_profil_alamat_hint">Tulis alamat lengkap </string>
+    <string name="text_label_profil_kontak">No. HP : </string>
+    <string name="text_label_profil_kontak_hint">Tulis nomor whatsapp </string>
+    <string name="text_label_profil_email">Email : </string>
+    <string name="text_label_profil_email_hint">Tulis email yg masih aktif </string>
+    <string name="text_label_profil_username">Username : </string>
+    <string name="text_label_profil_username_hint">Tulis username untuk login</string>
+    <string name="text_label_profil_password">Password : </string>
+    <string name="text_label_profil_member">Membership : </string>
+
+    <string-array name="membership_user">
+        <item>patient</item>
+        <item>administrator</item>
+    </string-array>
+
+    <string-array name="gender_user">
+        <item>wanita</item>
+        <item>pria</item>
+    </string-array>
 
 </resources>

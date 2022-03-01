@@ -1,12 +1,15 @@
 package booking.rth.web.id;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -38,11 +41,15 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
             textViewHour08, textViewHour10,
             textViewHour13, textViewHour16, textViewHour20;
 
+    Button buttonBookingJam08, buttonBookingJam10, buttonBookingJam13,
+            buttonBookingJam16, buttonBookingJam20;
+
     String dateChosen, NO_RTH = "+6285871341474";
     int gender_therapist;
     // 1 : male
     // 2 : female
 
+    ProgressBar progressBarLoading;
 
     ImageView imageViewUserProfile;
     WhatsappSender waSender;
@@ -53,6 +60,8 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
         setContentView(R.layout.activity_booking_schedule);
 
         waSender = new WhatsappSender(this);
+
+        progressBarLoading = (ProgressBar) findViewById(R.id.progressBarLoading);
 
         textViewDatePicked = (TextView) findViewById(R.id.textViewDatePicked);
         textViewKet08 = (TextView) findViewById(R.id.textViewKet08);
@@ -67,12 +76,24 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
         textViewHour16 = (TextView) findViewById(R.id.textViewHour16);
         textViewHour20 = (TextView) findViewById(R.id.textViewHour20);
 
+        buttonBookingJam08 = (Button) findViewById(R.id.buttonBookingJam08);
+        buttonBookingJam10 = (Button) findViewById(R.id.buttonBookingJam10);
+        buttonBookingJam13 = (Button) findViewById(R.id.buttonBookingJam13);
+        buttonBookingJam16 = (Button) findViewById(R.id.buttonBookingJam16);
+        buttonBookingJam20 = (Button) findViewById(R.id.buttonBookingJam20);
+
         imageViewUserProfile = (ImageView) findViewById(R.id.imageViewUserProfile);
 
+        centerTitleApp();
         updateText();
         updateUserProfile();
         callWeb();
 
+    }
+
+    private void centerTitleApp(){
+        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setCustomView(R.layout.actionbar);
     }
 
     private void updateText(){
@@ -150,30 +171,35 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
     private void addingDataRow(Schedule obj){
 
         if(obj.getSpecific_hour().equalsIgnoreCase("08:00")){
-            if(obj.getStatus()==1) {
+            if(obj.getStatus()!=1) {
                 setAvailable(textViewKet08);
                 setBold(textViewHour08);
+                buttonBookingJam08.setVisibility(View.VISIBLE);
             }
 
         } else if(obj.getSpecific_hour().equalsIgnoreCase("10:00")){
-            if(obj.getStatus()==1) {
+            if(obj.getStatus()!=1) {
                 setAvailable(textViewKet10);
                 setBold(textViewHour10);
+                buttonBookingJam10.setVisibility(View.VISIBLE);
             }
         } else if(obj.getSpecific_hour().equalsIgnoreCase("13:00")){
-            if(obj.getStatus()==1) {
+            if(obj.getStatus()!=1) {
                 setAvailable(textViewKet13);
                 setBold(textViewHour13);
+                buttonBookingJam13.setVisibility(View.VISIBLE);
             }
         } else if(obj.getSpecific_hour().equalsIgnoreCase("16:00")){
-            if(obj.getStatus()==1) {
+            if(obj.getStatus()!=1) {
                 setAvailable(textViewKet16);
                 setBold(textViewHour16);
+                buttonBookingJam16.setVisibility(View.VISIBLE);
             }
         } else if(obj.getSpecific_hour().equalsIgnoreCase("20:00")){
-            if(obj.getStatus()==1) {
+            if(obj.getStatus()!=1) {
                 setAvailable(textViewKet20);
                 setBold(textViewHour20);
+                buttonBookingJam20.setVisibility(View.VISIBLE);
             }
         }
 
@@ -220,12 +246,14 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
                         addingDataRow(single);
                     }
 
+                    progressBarLoading.setVisibility(View.INVISIBLE);
+
                 }
 
             } else if (!RespondHelper.isValidRespond(respond)) {
 
                 ShowDialog.message(this, "tidak ada jadwal yg kosong!");
-                //finish();
+                progressBarLoading.setVisibility(View.INVISIBLE);
 
             }
         } catch (Exception ex) {
@@ -257,7 +285,15 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
     }
 
     public String createText(String hour){
-    String res = "Bismillah,\nSaya ingin *Booking Jadwal*\n\n*"+
+        String kelamin;
+
+        if(UserProfile.USER_GENDER==Keys.MODE_IKHWAN){
+            kelamin = "pria";
+        }else {
+            kelamin = "wanita";
+        }
+
+    String res = "Bismillah,\nSaya *"+kelamin+ "* ingin *Booking Jadwal*\n\n*"+
             dateChosen + "* Pada *Jam " + hour + "*\n\n"+
             getBookingCode() +
             lowerMessage +   " apakah bisa?";
@@ -282,7 +318,7 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
     }
 
     public void openChatJam08(View v){
-        if(isAvailable((TextView) v) ){
+        if(isAvailable(textViewKet08) ){
             waSender.sendMessageToWhatsAppContact(NO_RTH, createText("08:00"));
         }else{
             ShowDialog.message(this, "Maaf jam 08:00 tidak tersedia!");
@@ -293,7 +329,7 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
 
 
     public void openChatJam10(View v){
-        if(isAvailable((TextView) v) ){
+        if(isAvailable(textViewKet10) ){
             waSender.sendMessageToWhatsAppContact(NO_RTH, createText("10:00"));
         }else{
             ShowDialog.message(this, "Maaf jam 10:00 tidak tersedia!");
@@ -301,7 +337,7 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
     }
 
     public void openChatJam13(View v){
-        if(isAvailable((TextView) v) ){
+        if(isAvailable(textViewKet13) ){
             waSender.sendMessageToWhatsAppContact(NO_RTH, createText("13:00"));
         }else{
             ShowDialog.message(this, "Maaf jam 13:00 tidak tersedia!");
@@ -309,7 +345,7 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
     }
 
     public void openChatJam16(View v){
-        if(isAvailable((TextView) v) ){
+        if(isAvailable(textViewKet16) ){
             waSender.sendMessageToWhatsAppContact(NO_RTH, createText("16:00"));
         }else{
             ShowDialog.message(this, "Maaf jam 16:00 tidak tersedia!");
@@ -317,7 +353,7 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
     }
 
     public void openChatJam20(View v){
-        if(isAvailable((TextView) v) ){
+        if(isAvailable(textViewKet20) ){
             waSender.sendMessageToWhatsAppContact(NO_RTH, createText("20:00"));
         }else{
             ShowDialog.message(this, "Maaf jam 20:00 tidak tersedia!");

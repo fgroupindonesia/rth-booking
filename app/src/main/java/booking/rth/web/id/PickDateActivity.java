@@ -1,5 +1,6 @@
 package booking.rth.web.id;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -37,9 +38,16 @@ public class PickDateActivity extends AppCompatActivity {
         textViewBulanTahun = (TextView) findViewById(R.id.textViewBulanTahun);
         imageViewUserProfile = (ImageView) findViewById(R.id.imageViewUserProfile);
 
+        centerTitleApp();
+
         updateMonth();
         generate2DateForWeeksAhead();
         updateUserProfile();
+    }
+
+    private void centerTitleApp(){
+        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setCustomView(R.layout.actionbar);
     }
 
     private void updateUserProfile(){
@@ -94,6 +102,7 @@ public class PickDateActivity extends AppCompatActivity {
         i.putExtra(Keys.DATE_CHOSEN, dateText);
 
         startActivity(i);
+
     }
 
     public void chooseProfile(View v){

@@ -1,5 +1,6 @@
 package booking.rth.web.id;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
@@ -31,10 +32,15 @@ public class TutorialActivity extends AppCompatActivity {
         linearTutorialPasien = (LinearLayout) findViewById(R.id.linearTutorialPasien);
         linearTutorialManajemen = (LinearLayout) findViewById(R.id.linearTutorialManajemen);
 
+        centerTitleApp();
         showLayoutAsUsage();
 
     }
 
+    private void centerTitleApp(){
+        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setCustomView(R.layout.actionbar);
+    }
 
     private void showLayoutAsUsage(){
 

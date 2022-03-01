@@ -1,5 +1,6 @@
 package booking.rth.web.id;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -9,12 +10,20 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import helper.Navigator;
 import helper.RespondHelper;
 import helper.ShowDialog;
 import helper.URLReference;
+import helper.UserProfile;
 import helper.WebRequest;
+import object.Schedule;
+import object.User;
 
 public class LoginActivity extends AppCompatActivity implements Navigator {
 
@@ -30,6 +39,8 @@ public class LoginActivity extends AppCompatActivity implements Navigator {
         editTextPassword = (EditText) findViewById(R.id.editTextPassword);
 
         textViewMessage = (TextView) findViewById(R.id.textViewMessage);
+
+        centerTitleApp();
     }
 
     public String getText(EditText txt){
@@ -65,6 +76,11 @@ public class LoginActivity extends AppCompatActivity implements Navigator {
         httpCall.execute();
     }
 
+    private void centerTitleApp(){
+        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setCustomView(R.layout.actionbar);
+    }
+
     @Override
     public void nextActivity() {
 
@@ -87,6 +103,17 @@ public class LoginActivity extends AppCompatActivity implements Navigator {
             if (RespondHelper.isValidRespond(respond)) {
 
                 if (urlTarget.contains(URLReference.UserVerify)) {
+
+                    JSONObject jsons = RespondHelper.getObject(respond, "multi_data");
+
+                    JsonParser parser = new JsonParser();
+                    JsonElement mJson =  parser.parse(jsons.toString());
+
+                    User objectUser  = objectG.fromJson(mJson, User.class);
+
+                    // we set temporarily for the integer (of gender) along with its ID
+                    UserProfile.USER_GENDER = objectUser.getGender();
+                    UserProfile.USER_ID = objectUser.getId();
 
                     textViewMessage.setVisibility(View.GONE);
                     openTutorialActivity();

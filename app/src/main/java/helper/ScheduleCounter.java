@@ -63,7 +63,7 @@ public class ScheduleCounter {
                status = obInner.getLegendStatus();
                break;
             }
-        }
+        }               
 
         return status;
 

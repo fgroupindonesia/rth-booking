@@ -1,5 +1,6 @@
 package booking.rth.web.id;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -22,6 +23,13 @@ public class ClientProfileActivity extends AppCompatActivity {
         linearAkhwat = (LinearLayout) findViewById(R.id.linearAkhwat);
         linearIkhwan = (LinearLayout) findViewById(R.id.linearIkhwan);
 
+
+        centerTitleApp();
+    }
+
+    private void centerTitleApp(){
+        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setCustomView(R.layout.actionbar);
     }
 
     public void openBookingIkhwan(View v){
@@ -37,8 +45,6 @@ public class ClientProfileActivity extends AppCompatActivity {
         Intent i = new Intent(this, PickDateActivity.class);
         UserProfile.USER_GENDER = modeUser;
         startActivity(i);
-
-        finish();
 
     }
 

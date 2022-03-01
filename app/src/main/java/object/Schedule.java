@@ -10,6 +10,7 @@ public class Schedule {
     private String date_chosen;
     private int gender_therapist;
     private String date_created;
+    private String description;
 
     public String getSpecific_hour() {
         return specific_hour;
@@ -57,5 +58,13 @@ public class Schedule {
 
     public void setDate_created(String date_created) {
         this.date_created = date_created;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

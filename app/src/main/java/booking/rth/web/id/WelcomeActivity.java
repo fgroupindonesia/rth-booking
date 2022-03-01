@@ -1,5 +1,6 @@
 package booking.rth.web.id;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -53,7 +54,13 @@ public class WelcomeActivity extends AppCompatActivity {
  			}
  		});
 
+        centerTitleApp();
         requestPermission();
+    }
+
+    private void centerTitleApp(){
+        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setCustomView(R.layout.actionbar);
     }
 
     private void gotoAnotherActivity(){

@@ -2,8 +2,8 @@ package helper;
 
 public class URLReference {
 
-    //public static String Remote = "http://client.portal.fgroupindonesia.com";
-    public static String Remote = "http://192.168.0.8/";
+    public static String Remote = "https://client.portal.fgroupindonesia.com/";
+    //public static String Remote = "http://192.168.0.8/";
 
     public static String MainWebsite = "http://rumahterapiherbal.web.id";
     public static String RegistrationPage = MainWebsite + "/p/pendaftaran-pelayanan.html";
@@ -14,4 +14,6 @@ public class URLReference {
     public static String ScheduleAdd = Remote + "schedule/add";
 
     public static String UserVerify = Remote + "user/login";
+    public static String UserUpdate = Remote + "user/update";
+    public static String UserProfile = Remote + "user/profile";
 }

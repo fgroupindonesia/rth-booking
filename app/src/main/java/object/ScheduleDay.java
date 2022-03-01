@@ -1,15 +1,14 @@
 package object;
 
+import java.util.ArrayList;
+
 public class ScheduleDay {
 
     private String date_chosen;
     private int totalSession = 5;
-    private int counter1 = 0, counter0 = 0;
-    private int counterLegend = 0;
+    private int counter1 = 0;
+    private int counterLegend = -1;
     String legendStatus;
-
-    public static String STATUS_GREEN = "green", STATUS_YELLOW = "yellow",
-    STATUS_ORANGE = "orange", STATUS_RED = "red", STATUS_WHITE = "white";
 
     private void applyLegend(){
 
@@ -34,25 +33,10 @@ public class ScheduleDay {
 
     public void updateCounter(Schedule ob){
 
-        if(ob.getStatus()==0){
-            counter0++;
-            if(counter1!=0) {
-                counter1--;
-            }
-        }else {
-          counter1++;
-          if(counter0!=0) {
-              counter0--;
-          }
+        if(ob.getStatus()==1){
+            counter1++;
         }
-
-        if(counter1==5 || counter1==0) {
             counterLegend = counter1;
-        }else if(counter1 > counter0) {
-            counterLegend = totalSession - counter1;
-        } else if (counter0 > 0){
-            counterLegend = totalSession - counter0;
-        }
 
         applyLegend();
 
@@ -62,8 +46,8 @@ public class ScheduleDay {
         this.setDate_chosen(sb.getDate_chosen());
         updateCounter(sb);
 
-    }
 
+    }
 
     public String getDate_chosen() {
         return date_chosen;
