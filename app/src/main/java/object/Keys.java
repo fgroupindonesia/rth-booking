@@ -12,4 +12,7 @@ public class Keys {
             LEGEND_ORANGE = "orange", LEGEND_RED = "red",
             LEGEND_WHITE = "white";
 
+    // used for toggling the hour or desc text shown
+    public static final String MODE_DESCRIPTION = "DESC", MODE_HOUR = "HOUR";
+
 }

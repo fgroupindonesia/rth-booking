@@ -6,7 +6,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -29,11 +31,16 @@ public class LoginActivity extends AppCompatActivity implements Navigator {
 
     EditText editTextUsername, editTextPassword;
     TextView textViewMessage;
+    ProgressBar progressBarLoading;
+    Button buttonLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        buttonLogin = (Button) findViewById(R.id.buttonLogin);
+        progressBarLoading = (ProgressBar) findViewById(R.id.progressBarLoading);
 
         editTextUsername = (EditText) findViewById(R.id.editTextUsername);
         editTextPassword = (EditText) findViewById(R.id.editTextPassword);
@@ -58,6 +65,9 @@ public class LoginActivity extends AppCompatActivity implements Navigator {
     }
 
     public void verifyUser(View v){
+
+        progressBarLoading.setVisibility(View.VISIBLE);
+        buttonLogin.setVisibility(View.INVISIBLE);
 
         WebRequest httpCall = new WebRequest(LoginActivity.this,LoginActivity.this);
 
@@ -115,12 +125,17 @@ public class LoginActivity extends AppCompatActivity implements Navigator {
                     UserProfile.USER_GENDER = objectUser.getGender();
                     UserProfile.USER_ID = objectUser.getId();
 
+                    progressBarLoading.setVisibility(View.INVISIBLE);
+                    buttonLogin.setVisibility(View.INVISIBLE);
+
                     textViewMessage.setVisibility(View.GONE);
                     openTutorialActivity();
                 }
 
             } else if (!RespondHelper.isValidRespond(respond)) {
 
+                progressBarLoading.setVisibility(View.INVISIBLE);
+                buttonLogin.setVisibility(View.VISIBLE);
 
                 textViewMessage.setVisibility(View.VISIBLE);
                 //finish();
@@ -129,6 +144,10 @@ public class LoginActivity extends AppCompatActivity implements Navigator {
         } catch (Exception ex) {
             ShowDialog.message(this, "Error " + ex.getMessage());
             ex.printStackTrace();
+
+            progressBarLoading.setVisibility(View.INVISIBLE);
+            buttonLogin.setVisibility(View.VISIBLE);
+
         }
 
     }

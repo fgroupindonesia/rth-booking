@@ -1,21 +1,17 @@
 package booking.rth.web.id;
 
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -26,9 +22,9 @@ import com.google.gson.JsonParser;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
@@ -43,17 +39,158 @@ import object.Schedule;
 
 public class DateSpecificActivity extends AppCompatActivity implements Navigator {
 
+    Schedule dataSchedule [];
+
     Switch elementToggle, switchJam8, switchJam10, switchJam13, switchJam16, switchJam20;
-    TextView textViewTitleJam, textViewTanggalBulanTahun;
+    TextView textViewTitleJam, textViewTanggalBulanTahun,
+            textViewJam8, textViewJam10, textViewJam13, textViewJam16, textViewJam20,
+    textViewTemp, textViewDescJam8, textViewDescJam10, textViewDescJam13, textViewDescJam16,
+            textViewDescJam20;
     Button buttonDetailOK;
     EditText keteranganEditText;
 
-    ImageView imageViewUserProfile;
+    ImageView imageViewUserProfile, imageViewJam20, imageViewJam16, imageViewJam13,
+            imageViewJam10, imageViewJam8;
 
     String dateComputerFormat, description;
     ProgressBar progressBarLoading;
 
     LinearLayout linearToggleHours;
+
+    public String getScheduleDescription(String hour){
+       String v = null;
+
+        for (Schedule s: dataSchedule){
+            if(s.getSpecific_hour().equalsIgnoreCase(hour) && s.getDescription()!=null){
+                if(s.getDescription().trim().length()>0) {
+                    v = s.getDescription();
+                }
+            break;
+            }
+        }
+
+        return v;
+    }
+
+    public void hideDescMe(View v){
+
+        v.setVisibility(View.GONE);
+
+        String tag = v.getTag().toString();
+
+        if(tag.equalsIgnoreCase("08:00")){
+            textViewJam8.setVisibility(View.VISIBLE);
+            switchJam8.setVisibility(View.VISIBLE);
+            imageViewJam8.setVisibility(View.VISIBLE);
+
+        }else if(tag.equalsIgnoreCase("10:00")){
+            textViewJam10.setVisibility(View.VISIBLE);
+            switchJam10.setVisibility(View.VISIBLE);
+            imageViewJam10.setVisibility(View.VISIBLE);
+
+        } else if(tag.equalsIgnoreCase("13:00")){
+            textViewJam13.setVisibility(View.VISIBLE);
+            switchJam13.setVisibility(View.VISIBLE);
+            imageViewJam13.setVisibility(View.VISIBLE);
+
+        } else if(tag.equalsIgnoreCase("16:00")){
+            textViewJam16.setVisibility(View.VISIBLE);
+            switchJam16.setVisibility(View.VISIBLE);
+            imageViewJam16.setVisibility(View.VISIBLE);
+
+
+        } else if(tag.equalsIgnoreCase("20:00")){
+            textViewJam20.setVisibility(View.VISIBLE);
+            switchJam20.setVisibility(View.VISIBLE);
+            imageViewJam20.setVisibility(View.VISIBLE);
+
+
+        }
+
+    }
+
+    private boolean isEmpty (TextView txt){
+        if(txt.getText().toString().trim().length()<=1){
+            return true;
+        }
+
+        return false;
+    }
+
+    public void showDescJam8(View v){
+        showDescription(v, "08:00");
+    }
+
+    public void showDescJam10(View v){
+        showDescription(v, "10:00");
+    }
+
+    public void showDescJam13(View v){
+        showDescription(v, "13:00");
+    }
+
+    public void showDescJam16(View v){
+        showDescription(v, "16:00");
+    }
+
+    public void showDescJam20(View v){
+        showDescription(v, "20:00");
+    }
+
+    public void showDescription(View v, String hour){
+
+            if(hour.equalsIgnoreCase("08:00") && getScheduleDescription("08:00") != null){
+                textViewJam8.setVisibility(View.GONE);
+                switchJam8.setVisibility(View.GONE);
+                imageViewJam8.setVisibility(View.GONE);
+                textViewDescJam8.setVisibility(View.VISIBLE);
+                textViewDescJam8.setText(getScheduleDescription("08:00"));
+            } else  if(hour.equalsIgnoreCase("10:00") && getScheduleDescription("10:00") != null ){
+                textViewJam10.setVisibility(View.GONE);
+                switchJam10.setVisibility(View.GONE);
+                imageViewJam10.setVisibility(View.GONE);
+                textViewDescJam10.setVisibility(View.VISIBLE);
+                textViewDescJam10.setText(getScheduleDescription("10:00"));
+            } else  if(hour.equalsIgnoreCase("13:00") && getScheduleDescription("13:00") != null ){
+                textViewJam13.setVisibility(View.GONE);
+                switchJam13.setVisibility(View.GONE);
+                imageViewJam13.setVisibility(View.GONE);
+                textViewDescJam13.setVisibility(View.VISIBLE);
+                textViewDescJam13.setText(getScheduleDescription("13:00"));
+            } else  if(hour.equalsIgnoreCase("16:00") && getScheduleDescription("16:00") != null ){
+                textViewJam16.setVisibility(View.GONE);
+                switchJam16.setVisibility(View.GONE);
+                imageViewJam16.setVisibility(View.GONE);
+                textViewDescJam16.setVisibility(View.VISIBLE);
+                textViewDescJam16.setText(getScheduleDescription("16:00"));
+            } else  if(hour.equalsIgnoreCase("20:00") && getScheduleDescription("20:00") != null){
+                textViewJam20.setVisibility(View.GONE);
+                switchJam20.setVisibility(View.GONE);
+                imageViewJam20.setVisibility(View.GONE);
+                textViewDescJam20.setVisibility(View.VISIBLE);
+                textViewDescJam20.setText(getScheduleDescription("20:00"));
+            }
+
+    }
+
+    private String getText(TextView t){
+        return t.getText().toString();
+    }
+
+    private void hideAllDesc(){
+        textViewDescJam8.setVisibility(View.GONE);
+        textViewDescJam10.setVisibility(View.GONE);
+        textViewDescJam13.setVisibility(View.GONE);
+        textViewDescJam16.setVisibility(View.GONE);
+        textViewDescJam20.setVisibility(View.GONE);
+
+        imageViewJam20.setVisibility(View.INVISIBLE);
+        imageViewJam16.setVisibility(View.INVISIBLE);
+        imageViewJam13.setVisibility(View.INVISIBLE);
+        imageViewJam10.setVisibility(View.INVISIBLE);
+        imageViewJam8.setVisibility(View.INVISIBLE);
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +207,20 @@ public class DateSpecificActivity extends AppCompatActivity implements Navigator
         switchJam16 = (Switch) findViewById(R.id.switchJam16);
         switchJam20 = (Switch) findViewById(R.id.switchJam20);
 
+        imageViewJam8 = (ImageView) findViewById(R.id.imageViewJam8);
+        imageViewJam10 = (ImageView) findViewById(R.id.imageViewJam10);
+        imageViewJam13 = (ImageView) findViewById(R.id.imageViewJam13);
+        imageViewJam16 = (ImageView) findViewById(R.id.imageViewJam16);
+        imageViewJam20 = (ImageView) findViewById(R.id.imageViewJam20);
+
+        textViewDescJam8 = (TextView) findViewById(R.id.textViewDescJam8);
+        textViewDescJam10 = (TextView) findViewById(R.id.textViewDescJam10);
+        textViewDescJam13 = (TextView) findViewById(R.id.textViewDescJam13);
+        textViewDescJam16 = (TextView) findViewById(R.id.textViewDescJam16);
+        textViewDescJam20 = (TextView) findViewById(R.id.textViewDescJam20);
+
+        hideAllDesc();
+
         imageViewUserProfile = (ImageView) findViewById(R.id.imageViewUserProfile);
 
         dateComputerFormat = getIntent().getStringExtra(Keys.DATE_CHOSEN);
@@ -78,7 +229,14 @@ public class DateSpecificActivity extends AppCompatActivity implements Navigator
         // if so, then turned the toggle on
         String legend = getIntent().getStringExtra(Keys.LEGEND);
 
+        textViewJam8 = (TextView) findViewById(R.id.textViewJam8);
+        textViewJam10 = (TextView) findViewById(R.id.textViewJam10);
+        textViewJam13 = (TextView) findViewById(R.id.textViewJam13);
+        textViewJam16 = (TextView) findViewById(R.id.textViewJam16);
+        textViewJam20 = (TextView) findViewById(R.id.textViewJam20);
+
         textViewTanggalBulanTahun = (TextView) findViewById(R.id.textViewTanggalBulanTahun);
+
 
         // prepare the date on Indonesian format
         prepareIndonesianTitle();
@@ -201,22 +359,39 @@ public class DateSpecificActivity extends AppCompatActivity implements Navigator
 
     }
 
-    // num is actually index provided from string values (xml)
-    public boolean isText(Switch el, int num){
-        String comp = getResources().getString(num);
-        return isText(el, comp);
-    }
-
     public boolean isText(Switch el, String n){
         return el.getText().toString().equalsIgnoreCase(n);
+    }
+
+    public boolean isText(Switch el, int res){
+        String r = getResources().getString(res);
+        return el.getText().toString().equalsIgnoreCase(r);
     }
 
     public boolean getToggleStatus(Switch el){
         return el.isChecked();
     }
 
+    private void updateKeterangan(String hour, String info){
+        int post = 0;
+        Schedule x = null;
+        for (Schedule s:dataSchedule){
+            if(s.getSpecific_hour().equalsIgnoreCase(hour)){
+                s.setDescription(info);
+                x = s;
+                break;
+            }
+
+            post++;
+        }
+
+        // update the existing ref back
+        dataSchedule[post] = x;
+
+    }
+
     // num is actually index provided from string values (xml)
-    private void showKeterangan(int num){
+    public void showKeterangan(int num){
         // jamSelected is using 00:00 format
         // such as 08:00
         final String jamSelected = getResources().getString(num);
@@ -226,9 +401,33 @@ public class DateSpecificActivity extends AppCompatActivity implements Navigator
         dialog.setContentView(R.layout.popup_detail_date_specific);
         dialog.setTitle(prepareIndonesianTitle());
 
+        dialog.setOnCancelListener(new Dialog.OnCancelListener(){
+
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                if(jamSelected.equalsIgnoreCase("08:00")){
+                    // if it is cancelled
+                    switchJam8.setChecked(false);
+                } else if(jamSelected.equalsIgnoreCase("10:00")){
+                    // if it is cancelled
+                    switchJam10.setChecked(false);
+                } else if(jamSelected.equalsIgnoreCase("13:00")){
+                    // if it is cancelled
+                    switchJam13.setChecked(false);
+                } else if(jamSelected.equalsIgnoreCase("16:00")){
+                    // if it is cancelled
+                    switchJam16.setChecked(false);
+                } else if(jamSelected.equalsIgnoreCase("20:00")){
+                    // if it is cancelled
+                    switchJam20.setChecked(false);
+                }
+            }
+
+
+        });
+
         textViewTitleJam = (TextView) dialog.findViewById(R.id.textViewTitleJam);
         textViewTitleJam.setText("Beri Keterangan pada " + jamSelected);
-
 
         buttonDetailOK = (Button) dialog.findViewById(R.id.buttonOK);
         buttonDetailOK.setOnClickListener(new View.OnClickListener() {
@@ -238,8 +437,36 @@ public class DateSpecificActivity extends AppCompatActivity implements Navigator
                 keteranganEditText = (EditText) dialog.findViewById(R.id.editTextKeterangan);
                 String  keterangan = keteranganEditText.getText().toString();
              //   ShowDialog.shortMessage(DateSpecificActivity.this, "diisinya " + keterangan);
+
                 updateDataWebSchedule(numRef, elementToggle, Keys.TOGGLE_ON, keterangan);
+
+
+                // giving the iconic for specific hour
+                if(jamSelected.equalsIgnoreCase("08:00")){
+                    //textViewJam8.setCompoundDrawablesWithIntrinsicBounds(R.drawable.edit16_icon, 0, 0, 0);
+                    imageViewJam8.setVisibility(View.VISIBLE);
+                    // update the array first
+                    updateKeterangan(jamSelected, keterangan);
+                }else if(jamSelected.equalsIgnoreCase("10:00")){
+                    imageViewJam10.setVisibility(View.VISIBLE);
+                    updateKeterangan(jamSelected, keterangan);
+                    //textViewJam10.setCompoundDrawablesWithIntrinsicBounds(R.drawable.edit16_icon, 0, 0, 0);
+                } else if(jamSelected.equalsIgnoreCase("13:00")){
+                    imageViewJam13.setVisibility(View.VISIBLE);
+                    updateKeterangan(jamSelected, keterangan);
+                    //textViewJam13.setCompoundDrawablesWithIntrinsicBounds(R.drawable.edit16_icon, 0, 0, 0);
+                } else if(jamSelected.equalsIgnoreCase("16:00")){
+                    imageViewJam16.setVisibility(View.VISIBLE);
+                    updateKeterangan(jamSelected, keterangan);
+                    //textViewJam16.setCompoundDrawablesWithIntrinsicBounds(R.drawable.edit16_icon, 0, 0, 0);
+                } else if(jamSelected.equalsIgnoreCase("20:00")){
+                    imageViewJam20.setVisibility(View.VISIBLE);
+                    updateKeterangan(jamSelected, keterangan);
+                    //textViewJam20.setCompoundDrawablesWithIntrinsicBounds(R.drawable.edit16_icon, 0, 0, 0);
+                }
+
                 dialog.dismiss();
+
             }
         });
 
@@ -249,37 +476,81 @@ public class DateSpecificActivity extends AppCompatActivity implements Navigator
 
     }
 
-    public void toggleJam(View v){
+
+    public void toggleJam20(View v){
+        toggleJam(v, R.string.text_hour_20);
+    }
+
+
+    public void toggleJam16(View v){
+        toggleJam(v, R.string.text_hour_16);
+    }
+
+
+    public void toggleJam13(View v){
+        toggleJam(v, R.string.text_hour_13);
+    }
+
+
+    public void toggleJam10(View v){
+        toggleJam(v, R.string.text_hour_10);
+    }
+
+    public void toggleJam8(View v){
+        toggleJam(v, R.string.text_hour_08);
+        }
+
+    public void toggleJam(View v, int res){
 
         elementToggle = (Switch) v;
 
         // these are for the ON toggles
 
-        if(isText(elementToggle, R.string.text_hour_08) && getToggleStatus(elementToggle)){
-            showKeterangan(R.string.text_hour_08);
-        } else if(isText(elementToggle, R.string.text_hour_10) && getToggleStatus(elementToggle)){
-            showKeterangan(R.string.text_hour_10);
-        } else if(isText(elementToggle, R.string.text_hour_13) && getToggleStatus(elementToggle)){
-            showKeterangan(R.string.text_hour_13);
-        } else if(isText(elementToggle, R.string.text_hour_16) && getToggleStatus(elementToggle)){
-            showKeterangan(R.string.text_hour_16);
-        } else if(isText(elementToggle, R.string.text_hour_20) && getToggleStatus(elementToggle)){
-            showKeterangan(R.string.text_hour_20);
+        if(getToggleStatus(elementToggle)){
+           // showKeterangan(R.string.text_hour_08);
+            showKeterangan(res);
         }
 
         // these are for the OFF toggles
+        String jam = getResources().getString(res);
 
-        if(isText(elementToggle, R.string.text_hour_08) && !getToggleStatus(elementToggle)){
-            updateDataWebSchedule(R.string.text_hour_08, elementToggle, Keys.TOGGLE_OFF);
-        } else if(isText(elementToggle, R.string.text_hour_10) && !getToggleStatus(elementToggle)){
-            updateDataWebSchedule(R.string.text_hour_10, elementToggle, Keys.TOGGLE_OFF);
-        } else if(isText(elementToggle, R.string.text_hour_13) && !getToggleStatus(elementToggle)){
-            updateDataWebSchedule(R.string.text_hour_13, elementToggle, Keys.TOGGLE_OFF);
-        } else if(isText(elementToggle, R.string.text_hour_16) && !getToggleStatus(elementToggle)){
-            updateDataWebSchedule(R.string.text_hour_16, elementToggle, Keys.TOGGLE_OFF);
-        } else if(isText(elementToggle, R.string.text_hour_20) && !getToggleStatus(elementToggle)){
-            updateDataWebSchedule(R.string.text_hour_20, elementToggle, Keys.TOGGLE_OFF);
+       // if(isText(elementToggle, R.string.text_hour_08) && !getToggleStatus(elementToggle)){
+        if( !getToggleStatus(elementToggle)) {
+            // updateDataWebSchedule(R.string.text_hour_08, elementToggle, Keys.TOGGLE_OFF);
+            updateDataWebSchedule(res, elementToggle, Keys.TOGGLE_OFF);
+
+            // delete locally
+            updateKeterangan(jam, null);
+
+            if(jam.equalsIgnoreCase("08:00")){
+                // removal the iconic help image
+                //textViewJam8.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                imageViewJam8.setVisibility(View.INVISIBLE);
+
+            } else if(jam.equalsIgnoreCase("10:00")){
+                // removal the iconic help image
+                // textViewJam10.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                imageViewJam10.setVisibility(View.INVISIBLE);
+
+            } else if(jam.equalsIgnoreCase("13:00")){
+                // removal the iconic help image
+               // textViewJam13.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                imageViewJam13.setVisibility(View.INVISIBLE);
+
+            } else if(jam.equalsIgnoreCase("16:00")){
+                // removal the iconic help image
+                //textViewJam16.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                imageViewJam16.setVisibility(View.INVISIBLE);
+
+            } else if(jam.equalsIgnoreCase("20:00")){
+                // removal the iconic help image
+                // textViewJam20.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                imageViewJam20.setVisibility(View.INVISIBLE);
+
+            }
+
         }
+
 
     }
 
@@ -291,7 +562,7 @@ public class DateSpecificActivity extends AppCompatActivity implements Navigator
         this.finish();
     }
 
-    private void updateDataWebSchedule(int num, Switch element, int statusOnOff, String desc){
+    public void updateDataWebSchedule(int num, Switch element, int statusOnOff, String desc){
 
         if(desc==null){
             description = "";
@@ -303,10 +574,6 @@ public class DateSpecificActivity extends AppCompatActivity implements Navigator
         // 08:00 for example!
         final String jamSelected = getResources().getString(num);
         String anID = null;
-        // for editing purposes
-        if(element.getTag()!=null){
-            anID = element.getTag().toString();
-        }
 
         WebRequest httpCall = new WebRequest(DateSpecificActivity.this, DateSpecificActivity.this);
 
@@ -321,18 +588,21 @@ public class DateSpecificActivity extends AppCompatActivity implements Navigator
         httpCall.setRequestMethod(WebRequest.POST_METHOD);
 
         // for editing purposes
+        if(element!=null){
         if(element.getTag()!=null) {
+            anID = element.getTag().toString();
             httpCall.addData("id", anID);
             httpCall.setTargetURL(URLReference.ScheduleUpdate);
         }else{
             httpCall.setTargetURL(URLReference.ScheduleAdd);
+        }
         }
 
         httpCall.execute();
 
     }
 
-    private void updateDataWebSchedule(int num, Switch element, int statusOnOff){
+    public void updateDataWebSchedule(int num, Switch element, int statusOnOff){
 
         updateDataWebSchedule(num, element, statusOnOff, null);
 
@@ -346,10 +616,19 @@ public class DateSpecificActivity extends AppCompatActivity implements Navigator
             // we set the id over here for editing purposes
             if(obj.getId()!=0){
                 switchJam8.setTag(obj.getId());
+
             }
 
             if(obj.getStatus()==1) {
                 switchJam8.setChecked(true);
+
+            }
+
+            if(obj.getDescription().length()>0) {
+                textViewDescJam8.setText(obj.getDescription());
+                //textViewJam8.setCompoundDrawablesWithIntrinsicBounds(R.drawable.edit16_icon, 0, 0, 0);
+                imageViewJam8.setVisibility(View.VISIBLE);
+
             }
 
         } else if(obj.getSpecific_hour().equalsIgnoreCase("10:00") ){
@@ -357,10 +636,19 @@ public class DateSpecificActivity extends AppCompatActivity implements Navigator
             // we set the id over here for editing purposes
             if(obj.getId()!=0){
                 switchJam10.setTag(obj.getId());
+
             }
 
             if(obj.getStatus()==1) {
                 switchJam10.setChecked(true);
+
+            }
+
+            if(obj.getDescription().length()>0) {
+                textViewDescJam10.setText(obj.getDescription());
+               // textViewJam10.setCompoundDrawablesWithIntrinsicBounds(R.drawable.edit16_icon, 0, 0, 0);
+                imageViewJam10.setVisibility(View.VISIBLE);
+
             }
 
         } else if(obj.getSpecific_hour().equalsIgnoreCase("13:00") ){
@@ -368,21 +656,38 @@ public class DateSpecificActivity extends AppCompatActivity implements Navigator
             // we set the id over here for editing purposes
             if(obj.getId()!=0){
                 switchJam13.setTag(obj.getId());
+
             }
 
             if(obj.getStatus()==1) {
                 switchJam13.setChecked(true);
+
             }
 
+            if(obj.getDescription().length()>0) {
+                textViewDescJam13.setText(obj.getDescription());
+                //textViewJam13.setCompoundDrawablesWithIntrinsicBounds(R.drawable.edit16_icon, 0, 0, 0);
+                imageViewJam13.setVisibility(View.VISIBLE);
+
+            }
         } else if(obj.getSpecific_hour().equalsIgnoreCase("16:00") ){
 
             // we set the id over here for editing purposes
             if(obj.getId()!=0){
                 switchJam16.setTag(obj.getId());
+
             }
 
             if(obj.getStatus()==1) {
                 switchJam16.setChecked(true);
+
+            }
+
+            if(obj.getDescription().length()>0) {
+                textViewDescJam16.setText(obj.getDescription());
+                imageViewJam16.setVisibility(View.VISIBLE);
+
+//                textViewJam16.setCompoundDrawablesWithIntrinsicBounds(R.drawable.edit16_icon, 0, 0, 0);
             }
 
         } else if(obj.getSpecific_hour().equalsIgnoreCase("20:00") ){
@@ -394,13 +699,17 @@ public class DateSpecificActivity extends AppCompatActivity implements Navigator
 
             if(obj.getStatus()==1) {
                 switchJam20.setChecked(true);
+
             }
 
+            if(obj.getDescription().length()>0) {
+                textViewDescJam20.setText(obj.getDescription());
+                imageViewJam20.setVisibility(View.VISIBLE);
+                //textViewJam20.setCompoundDrawablesWithIntrinsicBounds(R.drawable.edit16_icon, 0, 0, 0);
+            }
         }
 
     }
-
-
 
     @Override
     public void nextActivity() {
@@ -426,11 +735,11 @@ public class DateSpecificActivity extends AppCompatActivity implements Navigator
                     JSONArray jsons = RespondHelper.getArray(respond, "multi_data");
 
                     JsonElement mJson =  parser.parse(jsons.toString());
-                    Schedule object [] = objectG.fromJson(mJson, Schedule[].class);
+                    dataSchedule = objectG.fromJson(mJson, Schedule[].class);
 
                     // this is for specific date & month only
 
-                    for (Schedule single:object){
+                    for (Schedule single:dataSchedule){
                         addingDataIntoToggle(single);
                     }
 

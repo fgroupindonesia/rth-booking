@@ -65,6 +65,7 @@
     <string name="text_label_profil_username_hint">Tulis username untuk login</string>
     <string name="text_label_profil_password">Password : </string>
     <string name="text_label_profil_member">Membership : </string>
+    <string name="text_label_empty"> </string>
 
     <string-array name="membership_user">
         <item>patient</item>
@@ -75,5 +76,7 @@
         <item>wanita</item>
         <item>pria</item>
     </string-array>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

@@ -64,52 +64,209 @@
             android:background="@drawable/custom_border"
             android:orientation="vertical"
             android:paddingLeft="60dp"
-            android:paddingRight="60dp">
+            android:paddingRight="60dp"
+            android:paddingBottom="20dp">
 
-            <Switch
-                android:id="@+id/switchJam8"
+            <LinearLayout
+                android:id="@+id/linearJam8"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:onClick="toggleJam"
-                android:text="@string/text_hour_08" />
+                android:orientation="horizontal">
 
-            <Switch
-                android:id="@+id/switchJam10"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:onClick="toggleJam"
-                android:text="@string/text_hour_10" />
+                <ImageView
+                    android:id="@+id/imageViewJam8"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:onClick="showDescJam8"
+                    app:srcCompat="@drawable/edit16_icon" />
 
-            <Switch
-                android:id="@+id/switchJam13"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:onClick="toggleJam"
-                android:text="@string/text_hour_13" />
+                <TextView
+                    android:id="@+id/textViewJam8"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="showDescJam8"
+                    android:text="@string/text_hour_08" />
 
-            <Switch
-                android:id="@+id/switchJam16"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:onClick="toggleJam"
-                android:text="@string/text_hour_16" />
+                <Switch
+                    android:id="@+id/switchJam8"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="toggleJam8" />
 
-            <Switch
-                android:id="@+id/switchJam20"
+                <TextView
+                    android:id="@+id/textViewDescJam8"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:drawableLeft="@drawable/left16_icon"
+                    android:onClick="hideDescMe"
+                    android:tag="@string/text_hour_08"
+                    android:text="@string/text_label_empty" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linearJam10"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:onClick="toggleJam"
-                android:text="@string/text_hour_20" />
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/imageViewJam10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:onClick="showDescJam10"
+                    app:srcCompat="@drawable/edit16_icon" />
+
+                <TextView
+                    android:id="@+id/textViewJam10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="showDescJam10"
+                    android:text="@string/text_hour_10" />
+
+                <Switch
+                    android:id="@+id/switchJam10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="toggleJam10" />
+
+                <TextView
+                    android:id="@+id/textViewDescJam10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:drawableLeft="@drawable/left16_icon"
+                    android:onClick="hideDescMe"
+                    android:tag="@string/text_hour_10"
+                    android:text="@string/text_label_empty" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linearJam13"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/imageViewJam13"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:onClick="showDescJam13"
+                    app:srcCompat="@drawable/edit16_icon" />
+
+                <TextView
+                    android:id="@+id/textViewJam13"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="showDescJam13"
+                    android:text="@string/text_hour_13" />
+
+                <Switch
+                    android:id="@+id/switchJam13"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="toggleJam13" />
+
+                <TextView
+                    android:id="@+id/textViewDescJam13"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:drawableLeft="@drawable/left16_icon"
+                    android:onClick="hideDescMe"
+                    android:tag="@string/text_hour_13"
+                    android:text="@string/text_label_empty" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linearJam16"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/imageViewJam16"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:onClick="showDescJam16"
+                    app:srcCompat="@drawable/edit16_icon" />
+
+                <TextView
+                    android:id="@+id/textViewJam16"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="showDescJam16"
+                    android:text="@string/text_hour_16" />
+
+                <Switch
+                    android:id="@+id/switchJam16"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="toggleJam16" />
+
+                <TextView
+                    android:id="@+id/textViewDescJam16"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:drawableLeft="@drawable/left16_icon"
+                    android:onClick="hideDescMe"
+                    android:tag="@string/text_hour_16"
+                    android:text="@string/text_label_empty" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linearJam20"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/imageViewJam20"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:onClick="showDescJam20"
+                    app:srcCompat="@drawable/edit16_icon" />
+
+                <TextView
+                    android:id="@+id/textViewJam20"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="showDescJam20"
+                    android:text="@string/text_hour_20" />
+
+                <Switch
+                    android:id="@+id/switchJam20"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="toggleJam20" />
+
+                <TextView
+                    android:id="@+id/textViewDescJam20"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:drawableLeft="@drawable/left16_icon"
+                    android:onClick="hideDescMe"
+                    android:tag="@string/text_hour_20"
+                    android:text="@string/text_label_empty" />
+            </LinearLayout>
         </LinearLayout>
 
     </LinearLayout>
