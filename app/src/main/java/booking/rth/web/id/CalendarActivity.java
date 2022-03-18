@@ -15,6 +15,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -29,13 +31,16 @@ import helper.ShowDialog;
 import helper.URLReference;
 import helper.UserProfile;
 import helper.WebRequest;
+import object.Hijri;
 import object.Keys;
+import object.Month;
 import object.Schedule;
 import object.ScheduleDay;
+import object.Weekday;
 
 public class CalendarActivity extends AppCompatActivity implements Navigator {
 
-    TextView textViewNamaBulan;
+    TextView textViewNamaBulan, textViewTglMasehi, textViewTglHijriyyah;
     TableRow tableRow1, tableRow2, tableRow3, tableRow4, tableRow5;
     ImageView imageViewUserProfile, imageViewPreviousMonth, imageViewNextMonth;
     int currentMonth = 0;
@@ -44,6 +49,9 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calendar);
+
+        textViewTglMasehi = (TextView) findViewById(R.id.textViewTglMasehi);
+        textViewTglHijriyyah = (TextView) findViewById(R.id.textViewTglHijriyyah);
 
         tableRow1 = (TableRow) findViewById(R.id.tableRow1);
         tableRow2 = (TableRow) findViewById(R.id.tableRow2);
@@ -63,6 +71,32 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
         creatingDefaultCalendar();
 
         updateUserProfile();
+
+
+        // request to server another API REST CALL
+        getIslamicDate();
+
+    }
+
+    private void getIslamicDate(){
+
+        WebRequest httpCall = new WebRequest(CalendarActivity.this,CalendarActivity.this);
+
+        // posting to server with simple date
+        DateFormat sdfIndo = new SimpleDateFormat("dd-MM-yyyy");
+
+        String dataIndo = sdfIndo.format(new Date());
+
+        httpCall.addData("date", dataIndo);
+
+        // we need to wait for the response
+        httpCall.setWaitState(true);
+        httpCall.setDownloadState(false);
+        httpCall.setMultipartform(false);
+
+        httpCall.setRequestMethod(WebRequest.GET_METHOD);
+        httpCall.setTargetURL(URLReference.AdhanWebsite);
+        httpCall.execute();
 
     }
 
@@ -478,7 +512,7 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
         try {
             //ShowDialog.message(this, "Returned  " + respond);
 
-            Gson objectG = new Gson();
+            Gson gson = new Gson();
 
             if (RespondHelper.isValidRespond(respond)) {
 
@@ -488,7 +522,7 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
 
                     JsonParser parser = new JsonParser();
                     JsonElement mJson =  parser.parse(jsons.toString());
-                    Gson gson = new Gson();
+
                     Schedule object [] = gson.fromJson(mJson, Schedule[].class);
 
                     // this is for specific month only
@@ -500,6 +534,25 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
 
 
 
+                }else if(urlTarget.contains(URLReference.AdhanWebsite)){
+
+                    //ShowDialog.message(this, respond);
+
+                    JSONObject jsons = RespondHelper.getObject(respond, "data");
+
+                    Hijri dataHijriyyah  = gson.fromJson(jsons.getJSONObject("hijri").toString(), Hijri.class);
+
+                    Weekday dataHijriyyahWeek = gson.fromJson(jsons.getJSONObject("hijri").getJSONObject("weekday").toString(), Weekday.class);
+                    Month dataHijriyyahMonth = gson.fromJson(jsons.getJSONObject("hijri").getJSONObject("month").toString(), Month.class);
+
+                   // ShowDialog.message(this, dataHijriyyahWeek.getEn());
+
+                    textViewTglMasehi.setText(new SimpleDateFormat("EEEE dd-MMM-yyyy", new Locale("ID")).format(new Date()));
+                    textViewTglHijriyyah.setText(dataHijriyyahWeek.getEn() + " "
+                            + dataHijriyyah.getDay() + " "
+                                    + dataHijriyyahMonth.getEn() + " "
+                            + dataHijriyyah.getYear());
+
                 }
 
             } else if (!RespondHelper.isValidRespond(respond)) {
@@ -509,7 +562,7 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
 
             }
         } catch (Exception ex) {
-            ShowDialog.message(this, "Error " + ex.getMessage());
+            ShowDialog.message(this, "Error di activity" + ex.getMessage());
             ex.printStackTrace();
         }
 

@@ -5,6 +5,8 @@ public class URLReference {
     public static String Remote = "https://client.portal.fgroupindonesia.com/";
     //public static String Remote = "http://192.168.0.8/";
 
+    public static String AdhanWebsite = "http://api.aladhan.com/v1/gToH?";
+
     public static String MainWebsite = "http://rumahterapiherbal.web.id";
     public static String RegistrationPage = MainWebsite + "/p/pendaftaran-pelayanan.html";
 

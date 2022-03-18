@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import helper.UserProfile;
 import object.Keys;
+import shared.UserData;
 
 public class TutorialActivity extends AppCompatActivity {
 
@@ -26,6 +27,9 @@ public class TutorialActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tutorial);
 
+        // for storing information later
+        UserData.setPreference(this);
+
         buttonOKClient = (Button) findViewById(R.id.buttonOKClient);
         buttonOKManajemen = (Button) findViewById(R.id.buttonOKManajemen);
 
@@ -34,6 +38,12 @@ public class TutorialActivity extends AppCompatActivity {
 
         centerTitleApp();
         showLayoutAsUsage();
+
+        // if this person has been showed the tutorial page
+        // thus we directly skip this one
+       if(UserData.getPreferenceBoolean(Keys.NOT_FIRST_TIME)){
+           openNext(null);
+       }
 
     }
 
@@ -67,11 +77,16 @@ public class TutorialActivity extends AppCompatActivity {
 
            } else  if(UserProfile.USAGE == Keys.MANAGEMENT && isTextEquals(buttonOKManajemen, "ok")){
                intent = new Intent(this, CalendarActivity.class);
-
            }
 
            if(intent!=null){
+
+               // save the state
+               // so next time no need to view tutorial
+               UserData.savePreference(Keys.NOT_FIRST_TIME, true);
+
                startActivity(intent);
+
            }
 
             finish();

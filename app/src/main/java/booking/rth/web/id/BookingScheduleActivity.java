@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -17,7 +18,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -27,24 +30,32 @@ import java.util.Random;
 import helper.Navigator;
 import helper.RespondHelper;
 import helper.ShowDialog;
+import helper.URLMaker;
 import helper.URLReference;
 import helper.UserProfile;
 import helper.WebRequest;
 import helper.WhatsappSender;
+import object.Hijri;
 import object.Keys;
+import object.Month;
 import object.Schedule;
+import object.Weekday;
+import shared.UserData;
 
 public class BookingScheduleActivity extends AppCompatActivity implements Navigator {
 
     TextView textViewDatePicked, textViewKet08, textViewKet10,
             textViewKet13, textViewKet16, textViewKet20,
             textViewHour08, textViewHour10,
-            textViewHour13, textViewHour16, textViewHour20;
+            textViewHour13, textViewHour16, textViewHour20,
+            textViewDateIslamic;
 
     Button buttonBookingJam08, buttonBookingJam10, buttonBookingJam13,
             buttonBookingJam16, buttonBookingJam20;
 
-    String dateChosen, NO_RTH = "+6285871341474";
+    String dateChosen, NO_RTH = "+6285871341474",
+            usName, hourSelected, wa;
+
     int gender_therapist;
     // 1 : male
     // 2 : female
@@ -59,7 +70,15 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_booking_schedule);
 
+        // for storing later usage
+        UserData.setPreference(this);
+
+        usName = UserData.getPreferenceString(Keys.USERNAME);
+        wa = UserData.getPreferenceString(Keys.WHATSAPP);
+
         waSender = new WhatsappSender(this);
+
+        textViewDateIslamic = (TextView) findViewById(R.id.textViewDateIslamic);
 
         progressBarLoading = (ProgressBar) findViewById(R.id.progressBarLoading);
 
@@ -86,8 +105,60 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
 
         centerTitleApp();
         updateText();
+
+        // updating dateChosen here
         updateUserProfile();
         callWeb();
+
+        // request to server another API REST CALL
+        // using dateChosen as well
+        getIslamicDate();
+
+        if(UserData.getPreferenceBoolean(Keys.USER_REGISTER_STATUS)){
+            // if true then this is registered user
+
+            setButtonToWhatsapp(buttonBookingJam08);
+            setButtonToWhatsapp(buttonBookingJam10);
+            setButtonToWhatsapp(buttonBookingJam13);
+            setButtonToWhatsapp(buttonBookingJam16);
+            setButtonToWhatsapp(buttonBookingJam20);
+        }else {
+            // if not true then this is a new user
+            setButtonToLink(buttonBookingJam08);
+            setButtonToLink(buttonBookingJam10);
+            setButtonToLink(buttonBookingJam13);
+            setButtonToLink(buttonBookingJam16);
+            setButtonToLink(buttonBookingJam20);
+
+        }
+
+    }
+
+    private void setButtonToLink(Button btn){
+        btn.setBackgroundResource(R.drawable.file_info);
+        btn.setTag("link");
+    }
+
+    private void setButtonToWhatsapp(Button btn){
+        btn.setBackgroundResource(R.drawable.whatsapp24);
+        btn.setTag("whatsapp");
+    }
+
+    private void getIslamicDate(){
+
+        WebRequest httpCall = new WebRequest(BookingScheduleActivity.this,BookingScheduleActivity.this);
+
+        String dataIndo =   convertDateFormat(dateChosen, "dd-MM-yyyy");
+
+        httpCall.addData("date", dataIndo);
+        // we need to wait for the response
+        httpCall.setWaitState(true);
+        httpCall.setDownloadState(false);
+        httpCall.setMultipartform(false);
+
+        httpCall.setRequestMethod(WebRequest.GET_METHOD);
+        httpCall.setTargetURL(URLReference.AdhanWebsite);
+        httpCall.execute();
 
     }
 
@@ -96,6 +167,7 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
         getSupportActionBar().setCustomView(R.layout.actionbar);
     }
 
+    // updating dateChosen here
     private void updateText(){
 
         Bundle extras = getIntent().getExtras();
@@ -105,17 +177,20 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
             dateText = extras.getString(Keys.DATE_CHOSEN);
             dateChosen = dateText;
 
+            // the format used is
+            // EEEE dd-MMM-yyyy
+
             textViewDatePicked.setText(dateChosen);
         }
 
     }
 
-    private String convertDateFormat(String in)  {
+    private String convertDateFormat(String in, String dateFormat)  {
 
         String res = null;
 
         SimpleDateFormat originalFormat =  new SimpleDateFormat("EEEE dd-MMM-yyyy", new Locale("ID"));
-        DateFormat targetFormat = new SimpleDateFormat("yyyy-MM-dd");
+        DateFormat targetFormat = new SimpleDateFormat(dateFormat);
         try {
             Date date = originalFormat.parse(in);
             res = targetFormat.format(date);
@@ -129,7 +204,7 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
 
     private void callWeb(){
 
-        String dateServerFormat = convertDateFormat(dateChosen);
+        String dateServerFormat = convertDateFormat(dateChosen, "yyyy-MM-dd");
 
         //ShowDialog.message(this, "sending " + dateServerFormat);
         //ShowDialog.message(this, "sending " + String.valueOf(UserProfile.USER_GENDER));
@@ -149,10 +224,6 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
 
     }
 
-    public void updateDatePicked(){
-
-    }
-
     private void setAvailable(TextView txt){
         // setting the drawableRight image
         txt.setText(R.string.text_tersedia_small);
@@ -162,10 +233,6 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
 
     private void setBold(TextView txt){
         txt.setTypeface(null, Typeface.BOLD);
-    }
-
-    private void setNormal(TextView txt){
-        txt.setTypeface(null, Typeface.NORMAL);
     }
 
     private void addingDataRow(Schedule obj){
@@ -215,7 +282,6 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
             imageViewUserProfile.setImageResource(R.drawable.akhwat_logo);
         }
 
-
     }
 
     @Override
@@ -229,7 +295,7 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
         try {
             //ShowDialog.message(this, "dapt " + respond);
 
-            Gson objectG = new Gson();
+            Gson gson = new Gson();
 
             if (RespondHelper.isValidRespond(respond)) {
 
@@ -239,7 +305,7 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
 
                     JsonParser parser = new JsonParser();
                     JsonElement mJson =  parser.parse(jsons.toString());
-                    Gson gson = new Gson();
+
                     Schedule object [] = gson.fromJson(mJson, Schedule[].class);
 
                     for (Schedule single:object){
@@ -247,6 +313,24 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
                     }
 
                     progressBarLoading.setVisibility(View.INVISIBLE);
+
+                } else if(urlTarget.contains(URLReference.AdhanWebsite)){
+
+                    //ShowDialog.message(this, respond);
+
+                    JSONObject jsons = RespondHelper.getObject(respond, "data");
+
+                    Hijri dataHijriyyah  = gson.fromJson(jsons.getJSONObject("hijri").toString(), Hijri.class);
+
+                    Weekday dataHijriyyahWeek = gson.fromJson(jsons.getJSONObject("hijri").getJSONObject("weekday").toString(), Weekday.class);
+                    Month dataHijriyyahMonth = gson.fromJson(jsons.getJSONObject("hijri").getJSONObject("month").toString(), Month.class);
+
+                    // ShowDialog.message(this, dataHijriyyahWeek.getEn());
+
+                    textViewDateIslamic.setText(dataHijriyyahWeek.getEn() + " "
+                            + dataHijriyyah.getDay() + " "
+                            + dataHijriyyahMonth.getEn() + " "
+                            + dataHijriyyah.getYear());
 
                 }
 
@@ -265,10 +349,12 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
     }
 
     public String getBookingCode(){
+
         String aToZ="ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"; // 36 letter.
         String randomStr=generateRandom(aToZ);
         String s = "Kode Booking: *"+randomStr + "*\n";
         return s;
+
     }
 
     private static String generateRandom(String aToZ) {
@@ -296,16 +382,16 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
     String res = "Bismillah,\nSaya *"+kelamin+ "* ingin *Booking Jadwal*\n\n*"+
             dateChosen + "* Pada *Jam " + hour + "*\n\n"+
             getBookingCode() +
-            lowerMessage +   " apakah bisa?";
+            lowerMessage + " apakah bisa?";
 
       res =  res.replaceAll("\n", "%0a");
 
     return res;
     }
 
-    private String lowerMessage =  "\nuntuk Therapy: ...\n"+
-            "Nama Lengkap Saya: ...\n"+
-            "Kota: ...\n\n";
+    private String lowerMessage =  "\nuntuk *Therapy*\n"+
+            "Nama Lengkap Saya: *" + usName +"*\n"+
+            "\n\n";
 
     private boolean isAvailable(TextView v){
 
@@ -317,47 +403,64 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
         return true;
     }
 
+    public void openLink(String hourSelected){
+
+        URLMaker umaker = new URLMaker();
+        umaker.setMainURL(URLReference.RegistrationPage);
+        umaker.addParameterValue(Keys.HOUR_SELECTED, hourSelected);
+        // date is using dd-MM-yyyy format
+        umaker.addParameterValue(Keys.DATE_CHOSEN, dateChosen);
+        // name is using html parameter encoder
+        umaker.addParameterValue(Keys.USERNAME, usName);
+        umaker.addParameterValue(Keys.WHATSAPP, wa);
+
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(umaker.getCompleteURL())));
+
+    }
+
     public void openChatJam08(View v){
-        if(isAvailable(textViewKet08) ){
-            waSender.sendMessageToWhatsAppContact(NO_RTH, createText("08:00"));
-        }else{
-            ShowDialog.message(this, "Maaf jam 08:00 tidak tersedia!");
-        }
+
+        visitLinkOrWhatsapp(buttonBookingJam08, textViewKet08, "08:00");
 
         //ShowDialog.message(this, "Error saat jam 08!");
     }
 
+    public void visitLinkOrWhatsapp(Button btn, TextView txt, String hourSelected){
+        if(btn.getTag().toString().equalsIgnoreCase("link")){
+            // buka ke pendaftaran
+            openLink(hourSelected);
+        } else {
+
+            // buka whatsapp
+            if(isAvailable(txt) ){
+                waSender.sendMessageToWhatsAppContact(NO_RTH, createText(hourSelected));
+            }else{
+                ShowDialog.message(this, "Maaf jam "+ hourSelected +" tidak tersedia!");
+            }
+
+
+        }
+    }
 
     public void openChatJam10(View v){
-        if(isAvailable(textViewKet10) ){
-            waSender.sendMessageToWhatsAppContact(NO_RTH, createText("10:00"));
-        }else{
-            ShowDialog.message(this, "Maaf jam 10:00 tidak tersedia!");
-        }
+
+        visitLinkOrWhatsapp(buttonBookingJam10, textViewKet10, "10:00");
     }
 
     public void openChatJam13(View v){
-        if(isAvailable(textViewKet13) ){
-            waSender.sendMessageToWhatsAppContact(NO_RTH, createText("13:00"));
-        }else{
-            ShowDialog.message(this, "Maaf jam 13:00 tidak tersedia!");
-        }
+        visitLinkOrWhatsapp(buttonBookingJam13, textViewKet13, "13:00");
     }
 
     public void openChatJam16(View v){
-        if(isAvailable(textViewKet16) ){
-            waSender.sendMessageToWhatsAppContact(NO_RTH, createText("16:00"));
-        }else{
-            ShowDialog.message(this, "Maaf jam 16:00 tidak tersedia!");
-        }
+
+        visitLinkOrWhatsapp(buttonBookingJam16, textViewKet16, "16:00");
+
     }
 
     public void openChatJam20(View v){
-        if(isAvailable(textViewKet20) ){
-            waSender.sendMessageToWhatsAppContact(NO_RTH, createText("20:00"));
-        }else{
-            ShowDialog.message(this, "Maaf jam 20:00 tidak tersedia!");
-        }
+
+        visitLinkOrWhatsapp(buttonBookingJam20, textViewKet20, "20:00");
+
     }
 
     public void chooseProfile(View v){

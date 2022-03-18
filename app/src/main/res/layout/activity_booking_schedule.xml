@@ -45,9 +45,19 @@
             android:id="@+id/textViewDatePicked"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="5dp"
             android:text="TextView"
             android:textSize="24sp"
+            tools:text="@string/text_tanggal_big" />
+
+        <TextView
+            android:id="@+id/textViewDateIslamic"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:gravity="center"
+            android:text="TextView"
+            android:textSize="18sp"
             tools:text="@string/text_tanggal_big" />
 
         <TableLayout

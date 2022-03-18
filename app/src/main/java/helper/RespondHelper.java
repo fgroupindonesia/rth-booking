@@ -12,6 +12,10 @@ public class RespondHelper {
 
             if (jo.getString("status").equalsIgnoreCase("valid")) {
                 return true;
+            } else if(jo.getString("status").equalsIgnoreCase("ok")) {
+                return true;
+            } else if(jo.getString("status").equalsIgnoreCase("OK")) {
+                return true;
             }
 
         } catch (Exception ex) {

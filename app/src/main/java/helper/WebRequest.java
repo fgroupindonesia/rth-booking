@@ -59,7 +59,11 @@ public class WebRequest extends AsyncTask<String, Integer, String> {
 	 private Activity myContext;
 	 private boolean multipartform = false;
 	 private static boolean waitState = false;
-	 
+
+	 public boolean hasData(){
+	 	return keys.size()>0;
+	 }
+
 	public boolean isMultipartform() {
 		return multipartform;
 	}
@@ -218,23 +222,37 @@ public class WebRequest extends AsyncTask<String, Integer, String> {
 	protected String doInBackground(String... params) {
 		 try {
 
+		 	// if this is a GET mETHOD
+			 // and has a data parameter
+			 // so we combined into a full length of URL
+		 	if(this.hasData() && pilihanMethod == GET_METHOD){
+		 		if(!targetURL.contains("?")){
+		 			targetURL += "?";
+				}
+		 		targetURL += getAllDataPassed();
+			}
 
-		        url = new URL(targetURL);
+				//ShowDialog.message(myContext, "url going is " + targetURL);
 
-		        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			 url = new URL(targetURL);
+
+			 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		        conn.setReadTimeout(TIME_OUT_WAIT);
 		        conn.setConnectTimeout(TIME_OUT_WAIT);
+		        conn.setInstanceFollowRedirects(true);
 		        
 		        if(pilihanMethod==POST_METHOD){
-		        	conn.setRequestMethod("POST");	
+		        	conn.setRequestMethod("POST");
+					conn.setDoOutput(true);
 		        }else{
 		        	conn.setRequestMethod("GET");
+					conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36");
+					conn.setRequestProperty("Accept-Charset", charset);
 		        }
 		        
 		        // we want to receive the input & output stream
 		        conn.setUseCaches(false);
 		        conn.setDoInput(true);
-		        conn.setDoOutput(true);
 
 		        if(isMultipartform()){
 		        	
@@ -245,81 +263,96 @@ public class WebRequest extends AsyncTask<String, Integer, String> {
 		        }
 
 		        //conn.connect();
-		        OutputStream outputStream = conn.getOutputStream();
-		        BufferedWriter writer = new BufferedWriter(
-		                new OutputStreamWriter(outputStream, "UTF-8"));
-		        
-		        if(isMultipartform()==false && isDownloadState()==false){
-		        		// not for download nor post file
+
+
+		        if(pilihanMethod == POST_METHOD) {
+
+					OutputStream outputStream = conn.getOutputStream();
+					BufferedWriter writer = new BufferedWriter(
+							new OutputStreamWriter(outputStream, "UTF-8"));
+
+					if (isMultipartform() == false && isDownloadState() == false) {
+						// not for download nor post file
+
 						writer.write(this.getAllDataPassed());
-		        }else if(isMultipartform()==true && isDownloadState()==false) {
-		        	// we do writing for each data stored
-		        	// for multipartform request
-		        	
-		        	// write each key-values
-		        	for(int index=0; index<keys.size(); index++){
-		        		writer.append("--" + boundary).append(LINE_FEED);
-			            writer.append("Content-Disposition: form-data; name=\"" + keys.get(index) + "\"")
-			                    .append(LINE_FEED);
-			            writer.append("Content-Type: text/plain; charset=" + charset).append(
-			                    LINE_FEED);
-			            writer.append(LINE_FEED);
-			            writer.append(decode(values.get(index))).append(LINE_FEED);
-			            writer.flush();
-		        		
-		        	}
-		        	
-		        	// write each file contents
-		        	for (int index=0; index<keysFiles.size(); index++){
-		        		String fileName = fileNames.get(index);
-		                writer.append("--" + boundary).append(LINE_FEED);
-		                writer.append(
-		                        "Content-Disposition: form-data; name=\"" + keysFiles.get(index)
-		                                + "\"; filename=\"" + fileName + "\"")
-		                        .append(LINE_FEED);
-		                writer.append(
-		                        "Content-Type: "
-		                                + conn.guessContentTypeFromName(fileName))
-		                        .append(LINE_FEED);
-		                writer.append("Content-Transfer-Encoding: binary").append(LINE_FEED);
-		                writer.append(LINE_FEED);
-		                writer.flush();
+					} else if (isMultipartform() == true && isDownloadState() == false) {
+						// we do writing for each data stored
+						// for multipartform request
 
-		                FileInputStream inputStream = fileStreams.get(index);
-		                byte[] buffer = new byte[4096];
-		                int bytesRead = -1;
-		                while ((bytesRead = inputStream.read(buffer)) != -1) {
-		                    outputStream.write(buffer, 0, bytesRead);
-		                }
-		                outputStream.flush();
-		                inputStream.close();
+						// write each key-values
+						for (int index = 0; index < keys.size(); index++) {
+							writer.append("--" + boundary).append(LINE_FEED);
+							writer.append("Content-Disposition: form-data; name=\"" + keys.get(index) + "\"")
+									.append(LINE_FEED);
+							writer.append("Content-Type: text/plain; charset=" + charset).append(
+									LINE_FEED);
+							writer.append(LINE_FEED);
+							writer.append(decode(values.get(index))).append(LINE_FEED);
+							writer.flush();
 
-		                writer.append(LINE_FEED);
-		                writer.flush();
-		        	}
-		        	
-		        	// enclosing
-		        	writer.append(LINE_FEED).flush();
-		            writer.append("--" + boundary + "--").append(LINE_FEED);
-		           
-		        	
-		        }
+						}
+
+						// write each file contents
+						for (int index = 0; index < keysFiles.size(); index++) {
+							String fileName = fileNames.get(index);
+							writer.append("--" + boundary).append(LINE_FEED);
+							writer.append(
+									"Content-Disposition: form-data; name=\"" + keysFiles.get(index)
+											+ "\"; filename=\"" + fileName + "\"")
+									.append(LINE_FEED);
+							writer.append(
+									"Content-Type: "
+											+ conn.guessContentTypeFromName(fileName))
+									.append(LINE_FEED);
+							writer.append("Content-Transfer-Encoding: binary").append(LINE_FEED);
+							writer.append(LINE_FEED);
+							writer.flush();
+
+							FileInputStream inputStream = fileStreams.get(index);
+							byte[] buffer = new byte[4096];
+							int bytesRead = -1;
+							while ((bytesRead = inputStream.read(buffer)) != -1) {
+								outputStream.write(buffer, 0, bytesRead);
+							}
+							outputStream.flush();
+							inputStream.close();
+
+							writer.append(LINE_FEED);
+							writer.flush();
+						}
+
+						// enclosing
+						writer.append(LINE_FEED).flush();
+						writer.append("--" + boundary + "--").append(LINE_FEED);
 
 
-		        writer.flush();
-		        writer.close();
-		        outputStream.close();
+					}
+
+
+					writer.flush();
+					writer.close();
+					outputStream.close();
+
+					//conn.connect();
+				}
 		        
 		        int responseCode=conn.getResponseCode();
 
-		        if (responseCode == HttpURLConnection.HTTP_OK) {
+		        if (responseCode == HttpURLConnection.HTTP_OK || responseCode == HttpURLConnection.HTTP_BAD_REQUEST ) {
 
 		        	// if this is a usual text reply mode no downloading
 					// just casual text return we read
 		        	if(isDownloadState()==false) {
 
 						String line;
-						BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+						BufferedReader br = null;
+
+						if(responseCode == HttpURLConnection.HTTP_OK){
+							br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+						}else if(responseCode == HttpURLConnection.HTTP_BAD_REQUEST) {
+							br = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+						}
+
 						while ((line = br.readLine()) != null) {
 							response += line;
 						}
@@ -367,10 +400,8 @@ public class WebRequest extends AsyncTask<String, Integer, String> {
 					}
 		        }
 		        else {
-		            response="error";    
-
+		            response="error";
 		        }
-
 
 			 	endResult = response;
 		        
@@ -402,7 +433,7 @@ public class WebRequest extends AsyncTask<String, Integer, String> {
 	@Override
 	protected void onPostExecute(String result) {
 
-		if (endResult != null && statusCode != SERVER_ERROR) {
+		if (endResult != null ) {
 			// move to the next Activity
 			if (isWaitState() != true) {
 				webcall.nextActivity();

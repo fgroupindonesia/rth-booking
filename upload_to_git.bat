@@ -1,4 +1,4 @@
 git add .
-git commit -m "updating new check description on specific date (Admin)."
+git commit -m "updating Islamic Date(Admin & Client)."
 git push origin main
 git gc --prune

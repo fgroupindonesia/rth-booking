@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import helper.DoubleClickListener;
 import helper.UserProfile;
 import object.Keys;
+import shared.UserData;
 
 public class WelcomeActivity extends AppCompatActivity {
 
@@ -31,7 +32,7 @@ public class WelcomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_welcome);
 
         MediaPlayer mPlayer2 = MediaPlayer.create(this, R.raw.audio_selamat_datang);
-        //mPlayer2.start();
+        mPlayer2.start();
 
         imageViewLogoRTH = (ImageView) findViewById(R.id.imageViewLogoRTH);
 
@@ -56,6 +57,8 @@ public class WelcomeActivity extends AppCompatActivity {
 
         centerTitleApp();
         requestPermission();
+
+
     }
 
     private void centerTitleApp(){
@@ -67,6 +70,7 @@ public class WelcomeActivity extends AppCompatActivity {
 
         if(workAsClient) {
             UserProfile.USAGE = Keys.CLIENT;
+
             Intent intent = new Intent(this, TutorialActivity.class);
             startActivity(intent);
 
