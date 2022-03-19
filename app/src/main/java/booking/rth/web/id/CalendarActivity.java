@@ -16,7 +16,6 @@ import com.google.gson.JsonParser;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -29,26 +28,28 @@ import helper.RespondHelper;
 import helper.ScheduleCounter;
 import helper.ShowDialog;
 import helper.URLReference;
-import helper.UserProfile;
 import helper.WebRequest;
 import object.Hijri;
 import object.Keys;
 import object.Month;
 import object.Schedule;
-import object.ScheduleDay;
 import object.Weekday;
+import shared.UserData;
 
 public class CalendarActivity extends AppCompatActivity implements Navigator {
 
     TextView textViewNamaBulan, textViewTglMasehi, textViewTglHijriyyah;
     TableRow tableRow1, tableRow2, tableRow3, tableRow4, tableRow5;
     ImageView imageViewUserProfile, imageViewPreviousMonth, imageViewNextMonth;
-    int currentMonth = 0;
+    int currentMonth = 0, gender;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calendar);
+
+        // stored for future usage
+        UserData.setPreference(this);
 
         textViewTglMasehi = (TextView) findViewById(R.id.textViewTglMasehi);
         textViewTglHijriyyah = (TextView) findViewById(R.id.textViewTglHijriyyah);
@@ -67,11 +68,11 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
 
         imageViewUserProfile = (ImageView) findViewById(R.id.imageViewUserProfile);
 
-        centerTitleApp();
-        creatingDefaultCalendar();
-
+        // setting the gender from here
         updateUserProfile();
 
+        centerTitleApp();
+        creatingDefaultCalendar();
 
         // request to server another API REST CALL
         getIslamicDate();
@@ -138,11 +139,11 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
 
     private void updateUserProfile(){
 
-        int  modeUser = UserProfile.USER_GENDER;
+       gender = UserData.getPreferenceInt(Keys.USER_GENDER);
 
-        if(modeUser==Keys.MODE_IKHWAN){
+        if(gender==Keys.MODE_IKHWAN){
             imageViewUserProfile.setImageResource(R.drawable.ikhwan_logo);
-        }else if(modeUser==Keys.MODE_AKHWAT){
+        }else if(gender==Keys.MODE_AKHWAT){
             imageViewUserProfile.setImageResource(R.drawable.akhwat_logo);
         }
 
@@ -153,11 +154,11 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
         WebRequest httpCall = new WebRequest(CalendarActivity.this,CalendarActivity.this);
 
         // posting to server with default english language instead of Indonesian
-        //DateFormat sdfIndo = new SimpleDateFormat("MMMM yyyy", new Locale("ID"));
-        //DateFormat sdf = new SimpleDateFormat("MMMM yyyy");
+        // DateFormat sdfIndo = new SimpleDateFormat("MMMM yyyy", new Locale("ID"));
+        // DateFormat sdf = new SimpleDateFormat("MMMM yyyy");
 
-        //String mYear = sdf.format(new Date());
-        //String mYearIndo = sdfIndo.format(new Date());
+        // String mYear = sdf.format(new Date());
+        // String mYearIndo = sdfIndo.format(new Date());
 
         String mYear = bulanTahunEnglish;
         String mYearIndo = bulanTahunIndo;
@@ -167,7 +168,7 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
         // get the schedule for this specific gender on
         // this specific month of the year
         httpCall.addData("month_year", mYear);
-        httpCall.addData("gender", String.valueOf(UserProfile.USER_GENDER));
+        httpCall.addData("gender", String.valueOf(gender));
 
         // we need to wait for the response
         httpCall.setWaitState(true);

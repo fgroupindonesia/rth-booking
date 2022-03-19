@@ -4,7 +4,6 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.media.Image;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -15,18 +14,16 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import helper.Navigator;
 import helper.RespondHelper;
 import helper.ShowDialog;
 import helper.URLReference;
-import helper.UserProfile;
 import helper.WebRequest;
 import object.Keys;
-import object.Schedule;
 import object.User;
+import shared.UserData;
 
 public class UserProfileActivity extends AppCompatActivity implements Navigator {
 
@@ -35,10 +32,15 @@ public class UserProfileActivity extends AppCompatActivity implements Navigator 
             editTextUsername, editTextNoKontak;
     Spinner spinnerKelamin, spinnerMembership;
 
+    int userid, gender;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
+
+        // for future usage
+        UserData.setPreference(this);
 
         spinnerKelamin = (Spinner) findViewById(R.id.spinnerKelamin);
 
@@ -53,12 +55,15 @@ public class UserProfileActivity extends AppCompatActivity implements Navigator 
 
         centerTitleApp();
 
-        if(UserProfile.USER_ID!=-1){
+        userid = UserData.getPreferenceInt(Keys.USER_ID);
+
+        updateUserProfile();
+
+        if(userid!=0){
             // grab the data from server
             getDetails();
         }
 
-        updateUserProfile();
 
     }
 
@@ -69,21 +74,20 @@ public class UserProfileActivity extends AppCompatActivity implements Navigator 
 
     private void updateUserProfile(){
 
-        int  modeUser = UserProfile.USER_GENDER;
+       gender = UserData.getPreferenceInt(Keys.USER_ID);
 
-        if(modeUser==Keys.MODE_IKHWAN){
+        if(gender==Keys.MODE_IKHWAN){
             imageViewUserProfile.setImageResource(R.drawable.ikhwan_logo);
-        }else if(modeUser==Keys.MODE_AKHWAT){
+        }else if(gender==Keys.MODE_AKHWAT){
             imageViewUserProfile.setImageResource(R.drawable.akhwat_logo);
         }
-
 
     }
 
     private void getDetails(){
 
         WebRequest httpCall = new WebRequest(UserProfileActivity.this,UserProfileActivity.this);
-        httpCall.addData("id", String.valueOf(UserProfile.USER_ID));
+        httpCall.addData("id", String.valueOf(gender));
 
         // we need to wait for the response
         httpCall.setWaitState(true);
@@ -115,7 +119,7 @@ public class UserProfileActivity extends AppCompatActivity implements Navigator 
         httpCall.addData("contact", getText(editTextNoKontak));
         httpCall.addData("full_name", getText(editTextFullname));
         httpCall.addData("gender", String.valueOf(gender));
-        httpCall.addData("id", String.valueOf(UserProfile.USER_ID));
+        httpCall.addData("id", String.valueOf(gender));
 
         // we need to wait for the response
         httpCall.setWaitState(true);
@@ -137,7 +141,6 @@ public class UserProfileActivity extends AppCompatActivity implements Navigator 
 
         spinnerKelamin.setSelection(dataIn.getGender());
         //spinnerMembership.setSelection(dataIn.getMembership());
-
 
     }
 
@@ -174,10 +177,13 @@ public class UserProfileActivity extends AppCompatActivity implements Navigator 
 
                     // applying the spinner selection towards main local variable stored
                     if(spinnerKelamin.getSelectedItem().toString().equalsIgnoreCase("pria")){
-                        UserProfile.USER_GENDER = Keys.MODE_IKHWAN;
+                        gender = Keys.MODE_IKHWAN;
                     }else{
-                        UserProfile.USER_GENDER = Keys.MODE_AKHWAT;
+                        gender = Keys.MODE_AKHWAT;
                     }
+
+                    // stored locally
+                    UserData.savePreference(Keys.USER_GENDER, gender);
 
                     Intent i = new Intent(this, CalendarActivity.class);
                     startActivity(i);

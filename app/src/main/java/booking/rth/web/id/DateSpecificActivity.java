@@ -22,7 +22,6 @@ import com.google.gson.JsonParser;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -32,10 +31,10 @@ import helper.Navigator;
 import helper.RespondHelper;
 import helper.ShowDialog;
 import helper.URLReference;
-import helper.UserProfile;
 import helper.WebRequest;
 import object.Keys;
 import object.Schedule;
+import shared.UserData;
 
 public class DateSpecificActivity extends AppCompatActivity implements Navigator {
 
@@ -48,6 +47,8 @@ public class DateSpecificActivity extends AppCompatActivity implements Navigator
             textViewDescJam20;
     Button buttonDetailOK;
     EditText keteranganEditText;
+
+    int gender;
 
     ImageView imageViewUserProfile, imageViewJam20, imageViewJam16, imageViewJam13,
             imageViewJam10, imageViewJam8;
@@ -109,13 +110,6 @@ public class DateSpecificActivity extends AppCompatActivity implements Navigator
 
     }
 
-    private boolean isEmpty (TextView txt){
-        if(txt.getText().toString().trim().length()<=1){
-            return true;
-        }
-
-        return false;
-    }
 
     public void showDescJam8(View v){
         showDescription(v, "08:00");
@@ -173,10 +167,6 @@ public class DateSpecificActivity extends AppCompatActivity implements Navigator
 
     }
 
-    private String getText(TextView t){
-        return t.getText().toString();
-    }
-
     private void hideAllDesc(){
         textViewDescJam8.setVisibility(View.GONE);
         textViewDescJam10.setVisibility(View.GONE);
@@ -196,6 +186,10 @@ public class DateSpecificActivity extends AppCompatActivity implements Navigator
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_date_specific);
+
+        // stored for future usage
+        UserData.setPreference(this);
+
 
         progressBarLoading = (ProgressBar) findViewById(R.id.progressBarLoading);
 
@@ -237,6 +231,8 @@ public class DateSpecificActivity extends AppCompatActivity implements Navigator
 
         textViewTanggalBulanTahun = (TextView) findViewById(R.id.textViewTanggalBulanTahun);
 
+        // set the gender from here
+        updateUserProfile();
 
         // prepare the date on Indonesian format
         prepareIndonesianTitle();
@@ -262,7 +258,6 @@ public class DateSpecificActivity extends AppCompatActivity implements Navigator
 
         }
 
-        updateUserProfile();
 
     }
 
@@ -273,11 +268,11 @@ public class DateSpecificActivity extends AppCompatActivity implements Navigator
 
     private void updateUserProfile(){
 
-        int  modeUser = UserProfile.USER_GENDER;
+       gender = UserData.getPreferenceInt(Keys.USER_GENDER);
 
-        if(modeUser==Keys.MODE_IKHWAN){
+        if(gender==Keys.MODE_IKHWAN){
             imageViewUserProfile.setImageResource(R.drawable.ikhwan_logo);
-        }else if(modeUser==Keys.MODE_AKHWAT){
+        }else if(gender==Keys.MODE_AKHWAT){
             imageViewUserProfile.setImageResource(R.drawable.akhwat_logo);
         }
 
@@ -300,7 +295,7 @@ public class DateSpecificActivity extends AppCompatActivity implements Navigator
             httpCall.addData("specific_hour", jamSelected);
             httpCall.addData("status", String.valueOf(Keys.TOGGLE_OFF));
             httpCall.addData("description", description);
-            httpCall.addData("gender_therapist", String.valueOf(UserProfile.USER_GENDER));
+            httpCall.addData("gender_therapist", String.valueOf(gender));
             httpCall.addData("date_chosen", dateComputerFormat);
 
             // we need to wait for the response
@@ -336,7 +331,7 @@ public class DateSpecificActivity extends AppCompatActivity implements Navigator
     public void getDataServer(){
         WebRequest httpCall = new WebRequest(DateSpecificActivity.this,DateSpecificActivity.this);
 
-        httpCall.addData("gender_therapist", String.valueOf(UserProfile.USER_GENDER));
+        httpCall.addData("gender_therapist", String.valueOf(gender));
         httpCall.addData("date_chosen", dateComputerFormat);
 
         // we need to wait for the response
@@ -580,7 +575,7 @@ public class DateSpecificActivity extends AppCompatActivity implements Navigator
         httpCall.addData("specific_hour", jamSelected);
         httpCall.addData("status", String.valueOf(statusOnOff));
         httpCall.addData("description", description);
-        httpCall.addData("gender_therapist", String.valueOf(UserProfile.USER_GENDER));
+        httpCall.addData("gender_therapist", String.valueOf(gender));
         httpCall.addData("date_chosen", dateComputerFormat);
 
         // we need to wait for the response

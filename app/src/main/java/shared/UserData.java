@@ -13,8 +13,6 @@ public class UserData {
     public static String HOUR_MINUTE_SECOND_SAVED = null;
     public static String HOUR_MINUTE_SECOND_ELAPSED_SAVED = null;
 
-
-
     private static SharedPreferences sharedPreference;
 
     public static void setPreference(Activity act) {

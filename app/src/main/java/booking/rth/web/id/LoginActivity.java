@@ -15,17 +15,16 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import helper.Navigator;
 import helper.RespondHelper;
 import helper.ShowDialog;
 import helper.URLReference;
-import helper.UserProfile;
 import helper.WebRequest;
-import object.Schedule;
+import object.Keys;
 import object.User;
+import shared.UserData;
 
 public class LoginActivity extends AppCompatActivity implements Navigator {
 
@@ -33,6 +32,8 @@ public class LoginActivity extends AppCompatActivity implements Navigator {
     TextView textViewMessage;
     ProgressBar progressBarLoading;
     Button buttonLogin;
+
+    int gender, userid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,13 +51,13 @@ public class LoginActivity extends AppCompatActivity implements Navigator {
         centerTitleApp();
     }
 
-    public String getText(EditText txt){
+    public String getText(EditText txt) {
         return txt.getText().toString();
     }
 
-    private boolean isThisNoHP(String data){
+    private boolean isThisNoHP(String data) {
 
-        if(data.startsWith("+628") || data.startsWith("08")){
+        if (data.startsWith("+628") || data.startsWith("08")) {
             return true;
         }
 
@@ -64,20 +65,20 @@ public class LoginActivity extends AppCompatActivity implements Navigator {
 
     }
 
-    public void verifyUser(View v){
+    public void verifyUser(View v) {
 
         progressBarLoading.setVisibility(View.VISIBLE);
         buttonLogin.setVisibility(View.INVISIBLE);
 
-        WebRequest httpCall = new WebRequest(LoginActivity.this,LoginActivity.this);
+        WebRequest httpCall = new WebRequest(LoginActivity.this, LoginActivity.this);
 
-        if(isThisNoHP(getText(editTextUsername))){
+        if (isThisNoHP(getText(editTextUsername))) {
             httpCall.addData("contact", getText(editTextUsername));
-        }else{
+        } else {
             httpCall.addData("username", getText(editTextUsername));
         }
 
-         httpCall.addData("pass", getText(editTextPassword));
+        httpCall.addData("pass", getText(editTextPassword));
 
         // we need to wait for the response
         httpCall.setWaitState(true);
@@ -86,7 +87,7 @@ public class LoginActivity extends AppCompatActivity implements Navigator {
         httpCall.execute();
     }
 
-    private void centerTitleApp(){
+    private void centerTitleApp() {
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.actionbar);
     }
@@ -96,7 +97,7 @@ public class LoginActivity extends AppCompatActivity implements Navigator {
 
     }
 
-    private void openTutorialActivity(){
+    private void openTutorialActivity() {
         Intent i = new Intent(this, TutorialActivity.class);
         startActivity(i);
 
@@ -117,13 +118,16 @@ public class LoginActivity extends AppCompatActivity implements Navigator {
                     JSONObject jsons = RespondHelper.getObject(respond, "multi_data");
 
                     JsonParser parser = new JsonParser();
-                    JsonElement mJson =  parser.parse(jsons.toString());
+                    JsonElement mJson = parser.parse(jsons.toString());
 
-                    User objectUser  = objectG.fromJson(mJson, User.class);
+                    User objectUser = objectG.fromJson(mJson, User.class);
 
                     // we set temporarily for the integer (of gender) along with its ID
-                    UserProfile.USER_GENDER = objectUser.getGender();
-                    UserProfile.USER_ID = objectUser.getId();
+                    gender = objectUser.getGender();
+                    userid = objectUser.getId();
+
+                    UserData.savePreference(Keys.USER_GENDER, gender);
+                    UserData.savePreference(Keys.USER_ID, userid);
 
                     progressBarLoading.setVisibility(View.INVISIBLE);
                     buttonLogin.setVisibility(View.INVISIBLE);

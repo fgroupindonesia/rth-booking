@@ -11,9 +11,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
-import helper.UserProfile;
 import object.Keys;
 import shared.UserData;
 
@@ -23,6 +20,7 @@ public class ClientProfileActivity extends AppCompatActivity {
     linearLayoutDataForm, linearLayoutProfile;
 
     TextView textviewTitle;
+    int gender;
 
     boolean userRegister = false;
 
@@ -36,6 +34,8 @@ public class ClientProfileActivity extends AppCompatActivity {
 
         // for storing data
         UserData.setPreference(this);
+
+        gender = UserData.getPreferenceInt(Keys.USER_GENDER);
 
         textviewTitle = (TextView) findViewById(R.id.textviewTitle);
 
@@ -56,7 +56,11 @@ public class ClientProfileActivity extends AppCompatActivity {
         // ask are you a new / registered patient? --> save
         // ask again are you boy / girl?  --> save
         // both are required to input username & whatsapp  --> save
-        
+        if(!UserData.getPreferenceBoolean(Keys.USER_FORM_STATUS_COMPLETED)){
+            showLayout(Keys.LAYOUT_DETECT_REGISTER);
+        }else{
+            showLayout(Keys.LAYOUT_CHOOSE_PROFILE);
+        }
 
         // next time this opened again
         // because we already ask & has the registered patient data locally
@@ -66,19 +70,23 @@ public class ClientProfileActivity extends AppCompatActivity {
 
     }
 
-    public String getText(EditText edt){
+    public String getTextFromElement(EditText edt){
         return edt.getText().toString();
     }
 
     public void saveAndCheck(View v){
 
-        String wa = getText(editTextNomerWhatsapp);
-        String nama = getText(editTextNamaLengkap);
+        String wa = getTextFromElement(editTextNomerWhatsapp);
+        String nama = getTextFromElement(editTextNamaLengkap);
 
         // store locally for later usage
         UserData.savePreference(Keys.WHATSAPP, wa);
         UserData.savePreference(Keys.USERNAME, nama);
+        UserData.savePreference(Keys.USER_FORM_STATUS_COMPLETED, true);
 
+        // continue to another activity
+        openNext();
+        finish();
     }
 
     private void showLayout(int jenisLayout) {
@@ -86,7 +94,7 @@ public class ClientProfileActivity extends AppCompatActivity {
             linearLayoutDetectRegister.setVisibility(View.GONE);
             linearLayoutProfile.setVisibility(View.VISIBLE);
             linearLayoutDataForm.setVisibility(View.GONE);
-            textviewTitle.setText(R.string.text_profil_anda);
+            textviewTitle.setText(R.string.text_booking_untuk);
 
         } else if (jenisLayout == Keys.LAYOUT_DATA_FORM) {
             linearLayoutDetectRegister.setVisibility(View.GONE);
@@ -102,16 +110,19 @@ public class ClientProfileActivity extends AppCompatActivity {
         }
     }
 
-    public void openDataForm(View v) {
-        userRegister = true;
-        showLayout(Keys.LAYOUT_CHOOSE_PROFILE);
-        UserData.savePreference(Keys.USER_REGISTER_STATUS, userRegister);
-    }
 
-    public void openBookingBaru(View v) {
-        userRegister = false;
-        showLayout(Keys.LAYOUT_CHOOSE_PROFILE);
+    public void openChooseProfile(View v) {
+
+        String tag = v.getTag().toString();
+
+        if(tag.equalsIgnoreCase("lama")){
+            userRegister = true;
+        }else{
+            userRegister = false;
+        }
+
         UserData.savePreference(Keys.USER_REGISTER_STATUS, userRegister);
+        showLayout(Keys.LAYOUT_CHOOSE_PROFILE);
     }
 
     private void centerTitleApp() {
@@ -119,19 +130,35 @@ public class ClientProfileActivity extends AppCompatActivity {
         getSupportActionBar().setCustomView(R.layout.actionbar);
     }
 
-    public void openBookingIkhwan(View v) {
-        openNext(v, Keys.MODE_IKHWAN);
+    public void openDataForm(View v) {
+
+        String tag  = v.getTag().toString();
+
+        if(tag.equalsIgnoreCase("akhwat")){
+            gender = Keys.MODE_AKHWAT;
+        }else{
+            gender = Keys.MODE_IKHWAN;
+        }
+
+        UserData.savePreference(Keys.USER_GENDER, gender);
+        if(!UserData.getPreferenceBoolean(Keys.USER_FORM_STATUS_COMPLETED)){
+            showLayout(Keys.LAYOUT_DATA_FORM);
+        }else{
+            openNext();
+        }
+
     }
 
-    public void openBookingAkhwat(View v) {
-        openNext(v, Keys.MODE_AKHWAT);
-    }
 
-    public void openNext(View v, int modeUser) {
+    public void openNext() {
+
+        // gender is already defined either from button (linearLayout) clicked
+        // or from the local data stored
 
         Intent i = new Intent(this, PickDateActivity.class);
-        UserProfile.USER_GENDER = modeUser;
         startActivity(i);
+
+
 
     }
 

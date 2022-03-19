@@ -17,8 +17,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-import helper.UserProfile;
 import object.Keys;
+import shared.UserData;
 
 public class PickDateActivity extends AppCompatActivity {
 
@@ -33,6 +33,9 @@ public class PickDateActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pick_date);
+
+        // stored for future usage
+        UserData.setPreference(this);
 
         spinnerPickDate = (Spinner) findViewById(R.id.spinnerPickDate);
         textViewBulanTahun = (TextView) findViewById(R.id.textViewBulanTahun);
@@ -52,7 +55,7 @@ public class PickDateActivity extends AppCompatActivity {
 
     private void updateUserProfile(){
 
-        int  modeUser = UserProfile.USER_GENDER;
+        int  modeUser = UserData.getPreferenceInt(Keys.USER_GENDER);
 
             if(modeUser==Keys.MODE_IKHWAN){
                 imageViewUserProfile.setImageResource(R.drawable.ikhwan_logo);

@@ -20,7 +20,6 @@ import com.google.gson.JsonParser;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -32,7 +31,6 @@ import helper.RespondHelper;
 import helper.ShowDialog;
 import helper.URLMaker;
 import helper.URLReference;
-import helper.UserProfile;
 import helper.WebRequest;
 import helper.WhatsappSender;
 import object.Hijri;
@@ -48,7 +46,7 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
             textViewKet13, textViewKet16, textViewKet20,
             textViewHour08, textViewHour10,
             textViewHour13, textViewHour16, textViewHour20,
-            textViewDateIslamic;
+            textViewDateIslamic, textViewPetunjuk;
 
     Button buttonBookingJam08, buttonBookingJam10, buttonBookingJam13,
             buttonBookingJam16, buttonBookingJam20;
@@ -56,7 +54,7 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
     String dateChosen, NO_RTH = "+6285871341474",
             usName, hourSelected, wa;
 
-    int gender_therapist;
+    int gender;
     // 1 : male
     // 2 : female
 
@@ -79,7 +77,7 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
         waSender = new WhatsappSender(this);
 
         textViewDateIslamic = (TextView) findViewById(R.id.textViewDateIslamic);
-
+        textViewPetunjuk = (TextView) findViewById(R.id.textViewPetunjuk);
         progressBarLoading = (ProgressBar) findViewById(R.id.progressBarLoading);
 
         textViewDatePicked = (TextView) findViewById(R.id.textViewDatePicked);
@@ -103,11 +101,14 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
 
         imageViewUserProfile = (ImageView) findViewById(R.id.imageViewUserProfile);
 
+        // updating gender here
+        updateUserProfile();
+
         centerTitleApp();
+
+        // getting dateChosen here
         updateText();
 
-        // updating dateChosen here
-        updateUserProfile();
         callWeb();
 
         // request to server another API REST CALL
@@ -132,15 +133,30 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
 
         }
 
+        showLoading(true);
+
     }
 
+    private void showLoading(boolean b){
+        if(b){
+
+            progressBarLoading.setVisibility(View.VISIBLE);
+            textViewPetunjuk.setVisibility(View.GONE);
+        }else{
+            progressBarLoading.setVisibility(View.GONE);
+            textViewPetunjuk.setVisibility(View.VISIBLE);
+        }
+
+    }
     private void setButtonToLink(Button btn){
-        btn.setBackgroundResource(R.drawable.file_info);
+        btn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.file_info, 0, 0, 0);
+        //btn.setBackgroundResource(R.drawable.file_info);
         btn.setTag("link");
     }
 
     private void setButtonToWhatsapp(Button btn){
-        btn.setBackgroundResource(R.drawable.whatsapp24);
+        btn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.whatsapp24, 0, 0, 0);
+        //btn.setBackgroundResource(R.drawable.file_info);
         btn.setTag("whatsapp");
     }
 
@@ -148,7 +164,7 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
 
         WebRequest httpCall = new WebRequest(BookingScheduleActivity.this,BookingScheduleActivity.this);
 
-        String dataIndo =   convertDateFormat(dateChosen, "dd-MM-yyyy");
+        String dataIndo =   convertDateFormat(dateChosen, "dd-MM-yyyy", Keys.LANGUAGE_EN);
 
         httpCall.addData("date", dataIndo);
         // we need to wait for the response
@@ -167,7 +183,7 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
         getSupportActionBar().setCustomView(R.layout.actionbar);
     }
 
-    // updating dateChosen here
+    // getting dateChosen here
     private void updateText(){
 
         Bundle extras = getIntent().getExtras();
@@ -185,12 +201,19 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
 
     }
 
-    private String convertDateFormat(String in, String dateFormat)  {
+    private String convertDateFormat(String in, String dateFormat, int language)  {
 
         String res = null;
 
         SimpleDateFormat originalFormat =  new SimpleDateFormat("EEEE dd-MMM-yyyy", new Locale("ID"));
-        DateFormat targetFormat = new SimpleDateFormat(dateFormat);
+        DateFormat targetFormat = null;
+
+        if(language == Keys.LANGUAGE_EN){
+            targetFormat = new SimpleDateFormat(dateFormat);
+        }else {
+            targetFormat = new SimpleDateFormat(dateFormat, new Locale("ID"));
+        }
+
         try {
             Date date = originalFormat.parse(in);
             res = targetFormat.format(date);
@@ -204,14 +227,14 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
 
     private void callWeb(){
 
-        String dateServerFormat = convertDateFormat(dateChosen, "yyyy-MM-dd");
+        String dateServerFormat = convertDateFormat(dateChosen, "yyyy-MM-dd", Keys.LANGUAGE_EN);
 
         //ShowDialog.message(this, "sending " + dateServerFormat);
         //ShowDialog.message(this, "sending " + String.valueOf(UserProfile.USER_GENDER));
 
         WebRequest httpCall = new WebRequest(BookingScheduleActivity.this,BookingScheduleActivity.this);
         httpCall.addData("date_chosen", dateServerFormat);
-        httpCall.addData("gender_therapist", String.valueOf(UserProfile.USER_GENDER));
+        httpCall.addData("gender_therapist", String.valueOf(gender));
 
         // we need to wait for the response
         httpCall.setWaitState(true);
@@ -274,11 +297,11 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
 
     private void updateUserProfile(){
 
-        int  modeUser = UserProfile.USER_GENDER;
+       gender = UserData.getPreferenceInt(Keys.USER_GENDER);
 
-        if(modeUser==Keys.MODE_IKHWAN){
+        if(gender==Keys.MODE_IKHWAN){
             imageViewUserProfile.setImageResource(R.drawable.ikhwan_logo);
-        }else if(modeUser==Keys.MODE_AKHWAT){
+        }else if(gender==Keys.MODE_AKHWAT){
             imageViewUserProfile.setImageResource(R.drawable.akhwat_logo);
         }
 
@@ -312,7 +335,7 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
                         addingDataRow(single);
                     }
 
-                    progressBarLoading.setVisibility(View.INVISIBLE);
+                    showLoading(false);
 
                 } else if(urlTarget.contains(URLReference.AdhanWebsite)){
 
@@ -336,8 +359,11 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
 
             } else if (!RespondHelper.isValidRespond(respond)) {
 
-                ShowDialog.message(this, "tidak ada jadwal yg kosong!");
-                progressBarLoading.setVisibility(View.INVISIBLE);
+                String pesan = "Maaf sekali, tidak ada jadwal yg kosong!";
+                ShowDialog.message(this, pesan);
+
+                showLoading(false);
+                textViewPetunjuk.setText(pesan);
 
             }
         } catch (Exception ex) {
@@ -373,25 +399,26 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
     public String createText(String hour){
         String kelamin;
 
-        if(UserProfile.USER_GENDER==Keys.MODE_IKHWAN){
+        if(gender==Keys.MODE_IKHWAN){
             kelamin = "pria";
         }else {
             kelamin = "wanita";
         }
 
-    String res = "Bismillah,\nSaya *"+kelamin+ "* ingin *Booking Jadwal*\n\n*"+
+        String lowerMessage =  "\nMohon agar dijadwalkan *Therapy*\n"+
+                "apakah bisa?"+
+                "\n\n";
+
+    String res = "Bismillah,\nSaya *"+usName+ "* ingin *Booking Jadwal*\n\n*"+
             dateChosen + "* Pada *Jam " + hour + "*\n\n"+
             getBookingCode() +
-            lowerMessage + " apakah bisa?";
+            lowerMessage ;
 
       res =  res.replaceAll("\n", "%0a");
 
     return res;
     }
 
-    private String lowerMessage =  "\nuntuk *Therapy*\n"+
-            "Nama Lengkap Saya: *" + usName +"*\n"+
-            "\n\n";
 
     private boolean isAvailable(TextView v){
 
@@ -405,16 +432,23 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
 
     public void openLink(String hourSelected){
 
+        // we assume this person has filled in the form
+        UserData.savePreference(Keys.USER_REGISTER_STATUS, true);
+
         URLMaker umaker = new URLMaker();
         umaker.setMainURL(URLReference.RegistrationPage);
         umaker.addParameterValue(Keys.HOUR_SELECTED, hourSelected);
         // date is using dd-MM-yyyy format
-        umaker.addParameterValue(Keys.DATE_CHOSEN, dateChosen);
+        String dateForCognito = convertDateFormat(dateChosen, "EEEE dd-MM-yyyy", Keys.LANGUAGE_ID);
+        umaker.addParameterValue(Keys.DATE_CHOSEN, dateForCognito);
+
         // name is using html parameter encoder
         umaker.addParameterValue(Keys.USERNAME, usName);
         umaker.addParameterValue(Keys.WHATSAPP, wa);
 
-        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(umaker.getCompleteURL())));
+        Intent n = new Intent(Intent.ACTION_VIEW, Uri.parse(umaker.getCompleteURL()));
+        n.setPackage("com.android.chrome");
+        startActivity(n);
 
     }
 
@@ -429,6 +463,7 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
         if(btn.getTag().toString().equalsIgnoreCase("link")){
             // buka ke pendaftaran
             openLink(hourSelected);
+            ShowDialog.message(this, "Silahkan isi form dengan lengkap!");
         } else {
 
             // buka whatsapp
@@ -440,6 +475,24 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
 
 
         }
+
+        finish();
+    }
+
+    public void openLinkMaps(View v){
+
+        Intent n = new Intent(Intent.ACTION_VIEW, Uri.parse(URLReference.Gmaps));
+        n.setPackage("com.android.chrome");
+        startActivity(n);
+
+    }
+
+    public void openLinkWeb(View v){
+
+        Intent n = new Intent(Intent.ACTION_VIEW, Uri.parse(URLReference.MainWebsite));
+        n.setPackage("com.android.chrome");
+        startActivity(n);
+
     }
 
     public void openChatJam10(View v){

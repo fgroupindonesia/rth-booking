@@ -7,6 +7,7 @@ public class URLReference {
 
     public static String AdhanWebsite = "http://api.aladhan.com/v1/gToH?";
 
+    public static String Gmaps = "https://goo.gl/maps/m2yHcMzgVFYnf6FK6";
     public static String MainWebsite = "http://rumahterapiherbal.web.id";
     public static String RegistrationPage = MainWebsite + "/p/pendaftaran-pelayanan.html";
 

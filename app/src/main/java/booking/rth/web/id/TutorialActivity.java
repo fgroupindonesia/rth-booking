@@ -13,7 +13,6 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import helper.UserProfile;
 import object.Keys;
 import shared.UserData;
 
@@ -22,6 +21,8 @@ public class TutorialActivity extends AppCompatActivity {
     Button buttonOKClient, buttonOKManajemen;
     LinearLayout linearTutorialPasien, linearTutorialManajemen;
 
+    int user_usage;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,6 +30,8 @@ public class TutorialActivity extends AppCompatActivity {
 
         // for storing information later
         UserData.setPreference(this);
+
+        user_usage = UserData.getPreferenceInt(Keys.USER_USAGE);
 
         buttonOKClient = (Button) findViewById(R.id.buttonOKClient);
         buttonOKManajemen = (Button) findViewById(R.id.buttonOKManajemen);
@@ -54,7 +57,7 @@ public class TutorialActivity extends AppCompatActivity {
 
     private void showLayoutAsUsage(){
 
-        if(UserProfile.USAGE == Keys.MANAGEMENT){
+        if(user_usage == Keys.MANAGEMENT){
             linearTutorialManajemen.setVisibility(View.VISIBLE);
             linearTutorialPasien.setVisibility(View.GONE);
         }else{
@@ -72,10 +75,10 @@ public class TutorialActivity extends AppCompatActivity {
 
         if(haveNetworkConnection()){
             Intent intent = null;
-           if(UserProfile.USAGE == Keys.CLIENT && isTextEquals(buttonOKClient, "ok")){
+           if(user_usage == Keys.CLIENT && isTextEquals(buttonOKClient, "ok")){
                  intent = new Intent(this, ClientProfileActivity.class);
 
-           } else  if(UserProfile.USAGE == Keys.MANAGEMENT && isTextEquals(buttonOKManajemen, "ok")){
+           } else  if(user_usage == Keys.MANAGEMENT && isTextEquals(buttonOKManajemen, "ok")){
                intent = new Intent(this, CalendarActivity.class);
            }
 

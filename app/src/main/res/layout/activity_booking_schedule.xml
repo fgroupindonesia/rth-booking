@@ -28,9 +28,17 @@
             android:layout_weight="1" />
 
         <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="openLinkMaps"
+            app:srcCompat="@drawable/map32" />
+
+        <ImageView
             android:id="@+id/imageView3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:onClick="openLinkWeb"
             app:srcCompat="@drawable/logo_rth_booking64" />
     </LinearLayout>
 
@@ -56,9 +64,8 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
             android:gravity="center"
-            android:text="TextView"
-            android:textSize="18sp"
-            tools:text="@string/text_tanggal_big" />
+            android:text="@string/text_loading"
+            android:textSize="18sp" />
 
         <TableLayout
             android:layout_width="match_parent"
@@ -288,13 +295,15 @@
             android:id="@+id/progressBarLoading"
             style="?android:attr/progressBarStyle"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
 
         <TextView
-            android:id="@+id/textView24"
+            android:id="@+id/textViewPetunjuk"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
+            android:gravity="center"
             android:text="@string/text_pilih_tersedia_small" />
 
     </LinearLayout>
