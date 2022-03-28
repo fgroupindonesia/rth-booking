@@ -10,9 +10,12 @@ import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 import helper.DoubleClickListener;
+import helper.OnSwipeListener;
 import object.Keys;
 import shared.UserData;
 
@@ -25,6 +28,8 @@ public class WelcomeActivity extends AppCompatActivity {
     Handler handler = new Handler();
 
     int user_usage;
+
+    final int MOVE_RIGHT = 1, MOVE_LEFT = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,10 +56,49 @@ public class WelcomeActivity extends AppCompatActivity {
  			}
  		});
 
+        applySwapListener();
+        
+        blinking();
+
         centerTitleApp();
         requestPermission();
 
+    }
 
+    private void blinking(){
+        Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.blinking);
+        imageViewLogoRTH.startAnimation(animation);
+    }
+
+    private void applySwapListener(){
+        imageViewLogoRTH .setOnTouchListener(new OnSwipeListener(WelcomeActivity.this) {
+            public void onSwipeTop() {
+            }
+            public void onSwipeRight() {
+                swapAnim(MOVE_RIGHT);
+            }
+            public void onSwipeLeft() {
+                swapAnim(MOVE_LEFT);
+            }
+            public void onSwipeBottom() {
+           }
+        });
+    }
+
+    private void swapAnim(int area){
+
+        Animation animation = null;
+
+        if(area == MOVE_LEFT){
+           animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.movement_left);
+        }else {
+            animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.movement_right);
+        }
+
+        imageViewLogoRTH.startAnimation(animation);
+
+        // toggle the status
+        workAsClient = false;
     }
 
     private void centerTitleApp(){

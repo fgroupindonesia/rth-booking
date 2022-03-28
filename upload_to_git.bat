@@ -1,4 +1,4 @@
 git add .
-git commit -m "updated with googlemaps & weblink on icon (client)."
+git commit -m "updated with shareloc for the schedules + treatment options."
 git push origin main
 git gc --prune

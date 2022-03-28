@@ -15,12 +15,29 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <ImageView
-            android:id="@+id/imageViewUserProfile"
+        <RelativeLayout
+            android:id="@+id/activity_landing"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="chooseProfile"
-            app:srcCompat="@drawable/ikhwan_logo" />
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/imageViewUserProfile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="chooseProfile"
+                app:srcCompat="@drawable/ikhwan_logo" />
+
+            <ImageView
+                android:id="@+id/imageViewProfesi"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_below="@+id/imageViewUserProfile"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="-40dp"
+                app:srcCompat="@drawable/pelajar_icon" /><!-- negative margin to half of height -->
+            android:src="@mipmap/ic_launcher" />
+
+        </RelativeLayout>
         <Space
             android:layout_width="0dp"
             android:layout_weight="1"

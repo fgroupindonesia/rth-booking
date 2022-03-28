@@ -11,13 +11,15 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import helper.ShowDialog;
+import helper.TextChangedListener;
 import object.Keys;
 import shared.UserData;
 
 public class ClientProfileActivity extends AppCompatActivity {
 
     LinearLayout linearAkhwat, linearIkhwan, linearLayoutDetectRegister,
-    linearLayoutDataForm, linearLayoutProfile;
+            linearLayoutDataForm, linearLayoutProfile, linearLayoutProfesi;
 
     TextView textviewTitle;
     int gender;
@@ -44,6 +46,7 @@ public class ClientProfileActivity extends AppCompatActivity {
         linearLayoutDetectRegister = (LinearLayout) findViewById(R.id.linearLayoutDetectRegister);
         linearLayoutProfile = (LinearLayout) findViewById(R.id.linearLayoutProfile);
         linearLayoutDataForm = (LinearLayout) findViewById(R.id.linearLayoutDataForm);
+        linearLayoutProfesi = (LinearLayout) findViewById(R.id.linearLayoutProfesi);
 
         editTextNamaLengkap = (EditText) findViewById(R.id.editTextNamaLengkap);
         editTextNomerWhatsapp = (EditText) findViewById(R.id.editTextNomerWhatsapp);
@@ -56,10 +59,17 @@ public class ClientProfileActivity extends AppCompatActivity {
         // ask are you a new / registered patient? --> save
         // ask again are you boy / girl?  --> save
         // both are required to input username & whatsapp  --> save
-        if(!UserData.getPreferenceBoolean(Keys.USER_FORM_STATUS_COMPLETED)){
+        if (!UserData.getPreferenceBoolean(Keys.USER_FORM_STATUS_COMPLETED)) {
             showLayout(Keys.LAYOUT_DETECT_REGISTER);
-        }else{
-            showLayout(Keys.LAYOUT_CHOOSE_PROFILE);
+        } else {
+            // we let the user set the profesi first
+            // before choosing profile (gender)
+            //ShowDialog.message(this, "ada " + UserData.getPreferenceInt(Keys.USER_PROFESSION));
+            if (UserData.getPreferenceInt(Keys.USER_PROFESSION) == Keys.PROFESI_EMPTY) {
+                showLayout(Keys.LAYOUT_CHOOSE_PROFESSION);
+            }else {
+                showLayout(Keys.LAYOUT_CHOOSE_PROFILE);
+            }
         }
 
         // next time this opened again
@@ -68,13 +78,25 @@ public class ClientProfileActivity extends AppCompatActivity {
         // but we will not ask username & whatsapp anymore
         // just do booking
 
+
+        // this is precaution
+        // if the user didnt fill any data
+        setEditTextListeners();
     }
 
-    public String getTextFromElement(EditText edt){
+    private void setEditTextListeners(){
+        TextChangedListener textListener = new TextChangedListener(editTextNomerWhatsapp, editTextNamaLengkap);
+        textListener.setButtonLock(buttonCheck);
+
+        editTextNamaLengkap.addTextChangedListener(textListener);
+        editTextNomerWhatsapp.addTextChangedListener(textListener);
+    }
+
+    public String getTextFromElement(EditText edt) {
         return edt.getText().toString();
     }
 
-    public void saveAndCheck(View v){
+    public void saveAndCheck(View v) {
 
         String wa = getTextFromElement(editTextNomerWhatsapp);
         String nama = getTextFromElement(editTextNamaLengkap);
@@ -94,35 +116,69 @@ public class ClientProfileActivity extends AppCompatActivity {
             linearLayoutDetectRegister.setVisibility(View.GONE);
             linearLayoutProfile.setVisibility(View.VISIBLE);
             linearLayoutDataForm.setVisibility(View.GONE);
+            linearLayoutProfesi.setVisibility(View.GONE);
+
             textviewTitle.setText(R.string.text_booking_untuk);
 
         } else if (jenisLayout == Keys.LAYOUT_DATA_FORM) {
             linearLayoutDetectRegister.setVisibility(View.GONE);
             linearLayoutProfile.setVisibility(View.GONE);
             linearLayoutDataForm.setVisibility(View.VISIBLE);
+            linearLayoutProfesi.setVisibility(View.GONE);
+
             textviewTitle.setText(R.string.text_data_lengkap);
 
-        }else if(jenisLayout == Keys.LAYOUT_DETECT_REGISTER){
+        } else if (jenisLayout == Keys.LAYOUT_DETECT_REGISTER) {
             linearLayoutDetectRegister.setVisibility(View.VISIBLE);
             linearLayoutProfile.setVisibility(View.GONE);
             linearLayoutDataForm.setVisibility(View.GONE);
+            linearLayoutProfesi.setVisibility(View.GONE);
+
             textviewTitle.setText(R.string.text_profil_anda);
+        } else if (jenisLayout == Keys.LAYOUT_CHOOSE_PROFESSION) {
+            linearLayoutDetectRegister.setVisibility(View.GONE);
+            linearLayoutProfile.setVisibility(View.GONE);
+            linearLayoutDataForm.setVisibility(View.GONE);
+            linearLayoutProfesi.setVisibility(View.VISIBLE);
+            textviewTitle.setText(R.string.text_profil_anda);
+
         }
     }
 
+    boolean pelajar = false;
 
     public void openChooseProfile(View v) {
 
         String tag = v.getTag().toString();
 
-        if(tag.equalsIgnoreCase("lama")){
+        if (tag.equalsIgnoreCase("umum")) {
+            pelajar = false;
+        } else {
+            pelajar = true;
+        }
+
+        if (pelajar) {
+            UserData.savePreference(Keys.USER_PROFESSION, Keys.PROFESI_PELAJAR);
+        } else {
+            UserData.savePreference(Keys.USER_PROFESSION, Keys.PROFESI_UMUM);
+        }
+
+        showLayout(Keys.LAYOUT_CHOOSE_PROFILE);
+
+    }
+
+    public void openChooseProfesi(View v) {
+
+        String tag = v.getTag().toString();
+
+        if (tag.equalsIgnoreCase("lama")) {
             userRegister = true;
-        }else{
+        } else {
             userRegister = false;
         }
 
         UserData.savePreference(Keys.USER_REGISTER_STATUS, userRegister);
-        showLayout(Keys.LAYOUT_CHOOSE_PROFILE);
+        showLayout(Keys.LAYOUT_CHOOSE_PROFESSION);
     }
 
     private void centerTitleApp() {
@@ -132,18 +188,18 @@ public class ClientProfileActivity extends AppCompatActivity {
 
     public void openDataForm(View v) {
 
-        String tag  = v.getTag().toString();
+        String tag = v.getTag().toString();
 
-        if(tag.equalsIgnoreCase("akhwat")){
+        if (tag.equalsIgnoreCase("akhwat")) {
             gender = Keys.MODE_AKHWAT;
-        }else{
+        } else {
             gender = Keys.MODE_IKHWAN;
         }
 
         UserData.savePreference(Keys.USER_GENDER, gender);
-        if(!UserData.getPreferenceBoolean(Keys.USER_FORM_STATUS_COMPLETED)){
+        if (!UserData.getPreferenceBoolean(Keys.USER_FORM_STATUS_COMPLETED)) {
             showLayout(Keys.LAYOUT_DATA_FORM);
-        }else{
+        } else {
             openNext();
         }
 
@@ -157,7 +213,6 @@ public class ClientProfileActivity extends AppCompatActivity {
 
         Intent i = new Intent(this, PickDateActivity.class);
         startActivity(i);
-
 
 
     }

@@ -129,6 +129,8 @@ public class LoginActivity extends AppCompatActivity implements Navigator {
                     UserData.savePreference(Keys.USER_GENDER, gender);
                     UserData.savePreference(Keys.USER_ID, userid);
 
+                    //ShowDialog.message(this, "terverifikasi gender "+ gender + " dengan id "+ userid);
+
                     progressBarLoading.setVisibility(View.INVISIBLE);
                     buttonLogin.setVisibility(View.INVISIBLE);
 

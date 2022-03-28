@@ -414,6 +414,7 @@ public class WebRequest extends AsyncTask<String, Integer, String> {
 		    } catch (Exception e) {
 		 		ShowDialog.message(myContext, "error WebRequest " + e.getMessage());
 		    	ErrorLogger.write(e);
+		    	onPostExecute(endResult);
 		    }
 
 		return null;

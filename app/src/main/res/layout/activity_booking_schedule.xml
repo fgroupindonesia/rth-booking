@@ -1,311 +1,551 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scrollViewBooking"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingLeft="20dp"
-    android:paddingTop="40dp"
-    android:paddingRight="20dp"
+    android:fadeScrollbars="false"
+    android:fillViewport="true"
+    android:scrollbars="vertical"
     tools:context=".BookingScheduleActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:id="@+id/imageViewUserProfile"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="chooseProfile"
-            app:srcCompat="@drawable/ikhwan_logo" />
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
-
-        <ImageView
-            android:id="@+id/imageView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="openLinkMaps"
-            app:srcCompat="@drawable/map32" />
-
-        <ImageView
-            android:id="@+id/imageView3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="openLinkWeb"
-            app:srcCompat="@drawable/logo_rth_booking64" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="40dp"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingLeft="20dp"
+        android:paddingTop="40dp"
+        android:paddingRight="20dp">
 
-        <TextView
-            android:id="@+id/textViewDatePicked"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:text="TextView"
-            android:textSize="24sp"
-            tools:text="@string/text_tanggal_big" />
-
-        <TextView
-            android:id="@+id/textViewDateIslamic"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:gravity="center"
-            android:text="@string/text_loading"
-            android:textSize="18sp" />
+            android:orientation="horizontal">
 
-        <TableLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
 
-            <TableRow
-                android:layout_width="match_parent"
+            <RelativeLayout
+                android:id="@+id/activity_landing"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent">
 
-                <TextView
-                    android:id="@+id/textView22"
-                    android:layout_width="0dp"
+                <ImageView
+                    android:id="@+id/imageViewUserProfile"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="2"
-                    android:gravity="center"
-                    android:text="@string/text_jam_small"
-                    android:textStyle="bold" />
+                    android:onClick="chooseProfile"
+                    app:srcCompat="@drawable/ikhwan_logo" />
 
-                <TextView
-                    android:id="@+id/textView23"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="2"
-                    android:gravity="center"
-                    android:text="@string/text_keterangan_small"
-                    android:textStyle="bold" />
+                <ImageView
+                    android:id="@+id/imageViewProfesi"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_below="@+id/imageViewUserProfile"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="-40dp"
+                    app:srcCompat="@drawable/pelajar_icon" /><!-- negative margin to half of height -->
+                android:src="@mipmap/ic_launcher" />
 
-                <TextView
-                    android:id="@+id/textView11"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="2"
-                    android:gravity="center"
-                    android:text="@string/text_booking_small"
-                    android:textStyle="bold" />
+            </RelativeLayout>
 
-            </TableRow>
+            <ImageView
+                android:id="@+id/imageViewShare"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="shareTo"
+                app:srcCompat="@drawable/share32" />
 
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
 
-                <TextView
-                    android:id="@+id/textViewHour08"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_weight="2"
-                    android:gravity="center"
-                    android:text="@string/text_hour_08" />
+            <ImageView
+                android:id="@+id/imageViewMaps"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="openLinkMaps"
+                app:srcCompat="@drawable/map32" />
 
-                <TextView
-                    android:id="@+id/textViewKet08"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_weight="2"
-                    android:gravity="center"
-                    android:onClick="openChatJam08"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:text="@string/text_tidak_tersedia_small"
-                    android:textColor="@color/colorRed" />
+            <ImageView
+                android:id="@+id/imageView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="openLinkWeb"
+                app:srcCompat="@drawable/logo_rth_booking64" />
+        </LinearLayout>
 
-                <Button
-                    android:id="@+id/buttonBookingJam08"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_marginTop="5dp"
-                    android:layout_weight="2"
-                    android:drawableLeft="@drawable/whatsapp24"
-                    android:onClick="openChatJam08"
-                    android:text="@string/text_pilih_small"
-                    android:visibility="invisible" />
-
-            </TableRow>
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:id="@+id/textViewHour10"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_weight="2"
-                    android:gravity="center"
-                    android:text="@string/text_hour_10" />
-
-                <TextView
-                    android:id="@+id/textViewKet10"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_weight="2"
-                    android:gravity="center"
-                    android:onClick="openChatJam10"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:text="@string/text_tidak_tersedia_small"
-                    android:textColor="@color/colorRed" />
-
-                <Button
-                    android:id="@+id/buttonBookingJam10"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_marginTop="5dp"
-                    android:layout_weight="2"
-                    android:drawableLeft="@drawable/whatsapp24"
-                    android:onClick="openChatJam10"
-                    android:text="@string/text_pilih_small"
-                    android:visibility="invisible" />
-
-            </TableRow>
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:id="@+id/textViewHour13"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_weight="2"
-                    android:gravity="center"
-                    android:text="@string/text_hour_13" />
-
-                <TextView
-                    android:id="@+id/textViewKet13"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_weight="2"
-                    android:gravity="center"
-                    android:onClick="openChatJam13"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:text="@string/text_tidak_tersedia_small"
-                    android:textColor="@color/colorRed" />
-
-                <Button
-                    android:id="@+id/buttonBookingJam13"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_marginTop="5dp"
-                    android:layout_weight="2"
-                    android:drawableLeft="@drawable/whatsapp24"
-                    android:onClick="openChatJam13"
-                    android:text="@string/text_pilih_small"
-                    android:visibility="invisible" />
-
-            </TableRow>
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:id="@+id/textViewHour16"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_weight="2"
-                    android:gravity="center"
-                    android:text="@string/text_hour_16" />
-
-                <TextView
-                    android:id="@+id/textViewKet16"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_weight="2"
-                    android:gravity="center"
-                    android:onClick="openChatJam16"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:text="@string/text_tidak_tersedia_small"
-                    android:textColor="@color/colorRed" />
-
-                <Button
-                    android:id="@+id/buttonBookingJam16"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_marginTop="5dp"
-                    android:layout_weight="2"
-                    android:drawableLeft="@drawable/whatsapp24"
-                    android:onClick="openChatJam16"
-                    android:text="@string/text_pilih_small"
-                    android:visibility="invisible" />
-
-            </TableRow>
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:id="@+id/textViewHour20"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_weight="2"
-                    android:gravity="center"
-                    android:text="@string/text_hour_20" />
-
-                <TextView
-                    android:id="@+id/textViewKet20"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_weight="2"
-                    android:gravity="center"
-                    android:onClick="openChatJam20"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:text="@string/text_tidak_tersedia_small"
-                    android:textColor="@color/colorRed" />
-
-                <Button
-                    android:id="@+id/buttonBookingJam20"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_marginTop="5dp"
-                    android:layout_weight="2"
-                    android:drawableLeft="@drawable/whatsapp24"
-                    android:onClick="openChatJam20"
-                    android:text="@string/text_pilih_small"
-                    android:visibility="invisible" />
-
-            </TableRow>
-
-        </TableLayout>
-
-        <ProgressBar
-            android:id="@+id/progressBarLoading"
-            style="?android:attr/progressBarStyle"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone" />
+            android:layout_height="match_parent"
+            android:layout_marginTop="40dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/textViewPetunjuk"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:gravity="center"
-            android:text="@string/text_pilih_tersedia_small" />
+            <TextView
+                android:id="@+id/textViewDatePicked"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:text="TextView"
+                android:textSize="24sp"
+                tools:text="@string/text_tanggal_big" />
+
+            <TextView
+                android:id="@+id/textViewDateIslamic"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:gravity="center"
+                android:text="@string/text_loading"
+                android:textSize="18sp" />
+
+            <LinearLayout
+                android:id="@+id/linearTreatmentPick"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TableLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="20dp">
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:gravity="center"
+                            android:text="@string/text_therapy_small"
+                            android:textStyle="bold" />
+
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <CheckBox
+                            android:id="@+id/checkBoxUmum"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:onClick="resetTreatment"
+                            android:text="@string/text_saya_tak_tau_small" />
+
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <CheckBox
+                            android:id="@+id/checkBoxGurah"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:onClick="kalkulasiBiaya"
+                            android:text="@string/text_gurah_small" />
+
+                    </TableRow>
+
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <CheckBox
+                            android:id="@+id/checkBoxLintah"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:onClick="kalkulasiBiaya"
+                            android:text="@string/text_lintah_small" />
+
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <CheckBox
+                            android:id="@+id/checkBoxHijamah"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:onClick="kalkulasiBiaya"
+                            android:text="@string/text_hijamah_small" />
+
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <CheckBox
+                            android:id="@+id/checkBoxElektrik"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:onClick="kalkulasiBiaya"
+                            android:text="@string/text_elektrik_small" />
+
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <CheckBox
+                            android:id="@+id/checkBoxPijat"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:onClick="kalkulasiBiaya"
+                            android:text="@string/text_pijat_small" />
+
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <CheckBox
+                            android:id="@+id/checkBoxNebu"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:onClick="kalkulasiBiaya"
+                            android:text="@string/text_nebu_small" />
+
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <CheckBox
+                            android:id="@+id/checkBoxRuqyah"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:onClick="kalkulasiBiaya"
+                            android:text="@string/text_ruqyah_small" />
+
+                    </TableRow>
+
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <CheckBox
+                            android:id="@+id/checkBoxFashdu"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:onClick="kalkulasiBiaya"
+                            android:text="@string/text_fashdu_small" />
+
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <CheckBox
+                            android:id="@+id/checkBoxMoxa"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:onClick="kalkulasiBiaya"
+                            android:text="@string/text_moxa_small" />
+
+                    </TableRow>
+
+                </TableLayout>
+
+                <TextView
+                    android:id="@+id/textViewPetunjukTreatment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:gravity="center"
+                    android:text="@string/text_pilih_opsi_treatment" />
+
+                <TextView
+                    android:id="@+id/textViewEstimasiBiaya"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:gravity="center"
+                    android:text="@string/text_estimasi_big"
+                    android:textColor="@android:color/background_dark"
+                    android:textSize="18sp"
+                    android:visibility="invisible" />
+
+                <Button
+                    android:id="@+id/buttonTreatmentOK"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:onClick="tampilkanJadwal"
+                    android:text="@string/text_button_ok"
+                    android:visibility="gone" />
+
+                <View
+                    android:id="@+id/bottomView"
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"></View>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linearBookingTable"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TableLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:id="@+id/textView22"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:gravity="center"
+                            android:text="@string/text_jam_small"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/textView23"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:gravity="center"
+                            android:text="@string/text_keterangan_small"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/textView11"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:gravity="center"
+                            android:text="@string/text_booking_small"
+                            android:textStyle="bold" />
+
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:id="@+id/textViewHour08"
+                            android:layout_width="0dp"
+                            android:layout_height="40dp"
+                            android:layout_weight="2"
+                            android:gravity="center"
+                            android:text="@string/text_hour_08" />
+
+                        <TextView
+                            android:id="@+id/textViewKet08"
+                            android:layout_width="0dp"
+                            android:layout_height="40dp"
+                            android:layout_weight="2"
+                            android:gravity="center"
+                            android:onClick="openChatJam08"
+                            android:paddingLeft="10dp"
+                            android:paddingRight="10dp"
+                            android:text="@string/text_tidak_tersedia_small"
+                            android:textColor="@color/colorRed" />
+
+                        <Button
+                            android:id="@+id/buttonBookingJam08"
+                            android:layout_width="0dp"
+                            android:layout_height="40dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_weight="2"
+                            android:drawableLeft="@drawable/whatsapp24"
+                            android:onClick="openChatJam08"
+                            android:text="@string/text_pilih_small"
+                            android:visibility="invisible" />
+
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:id="@+id/textViewHour10"
+                            android:layout_width="0dp"
+                            android:layout_height="40dp"
+                            android:layout_weight="2"
+                            android:gravity="center"
+                            android:text="@string/text_hour_10" />
+
+                        <TextView
+                            android:id="@+id/textViewKet10"
+                            android:layout_width="0dp"
+                            android:layout_height="40dp"
+                            android:layout_weight="2"
+                            android:gravity="center"
+                            android:onClick="openChatJam10"
+                            android:paddingLeft="10dp"
+                            android:paddingRight="10dp"
+                            android:text="@string/text_tidak_tersedia_small"
+                            android:textColor="@color/colorRed" />
+
+                        <Button
+                            android:id="@+id/buttonBookingJam10"
+                            android:layout_width="0dp"
+                            android:layout_height="40dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_weight="2"
+                            android:drawableLeft="@drawable/whatsapp24"
+                            android:onClick="openChatJam10"
+                            android:text="@string/text_pilih_small"
+                            android:visibility="invisible" />
+
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:id="@+id/textViewHour13"
+                            android:layout_width="0dp"
+                            android:layout_height="40dp"
+                            android:layout_weight="2"
+                            android:gravity="center"
+                            android:text="@string/text_hour_13" />
+
+                        <TextView
+                            android:id="@+id/textViewKet13"
+                            android:layout_width="0dp"
+                            android:layout_height="40dp"
+                            android:layout_weight="2"
+                            android:gravity="center"
+                            android:onClick="openChatJam13"
+                            android:paddingLeft="10dp"
+                            android:paddingRight="10dp"
+                            android:text="@string/text_tidak_tersedia_small"
+                            android:textColor="@color/colorRed" />
+
+                        <Button
+                            android:id="@+id/buttonBookingJam13"
+                            android:layout_width="0dp"
+                            android:layout_height="40dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_weight="2"
+                            android:drawableLeft="@drawable/whatsapp24"
+                            android:onClick="openChatJam13"
+                            android:text="@string/text_pilih_small"
+                            android:visibility="invisible" />
+
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:id="@+id/textViewHour16"
+                            android:layout_width="0dp"
+                            android:layout_height="40dp"
+                            android:layout_weight="2"
+                            android:gravity="center"
+                            android:text="@string/text_hour_16" />
+
+                        <TextView
+                            android:id="@+id/textViewKet16"
+                            android:layout_width="0dp"
+                            android:layout_height="40dp"
+                            android:layout_weight="2"
+                            android:gravity="center"
+                            android:onClick="openChatJam16"
+                            android:paddingLeft="10dp"
+                            android:paddingRight="10dp"
+                            android:text="@string/text_tidak_tersedia_small"
+                            android:textColor="@color/colorRed" />
+
+                        <Button
+                            android:id="@+id/buttonBookingJam16"
+                            android:layout_width="0dp"
+                            android:layout_height="40dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_weight="2"
+                            android:drawableLeft="@drawable/whatsapp24"
+                            android:onClick="openChatJam16"
+                            android:text="@string/text_pilih_small"
+                            android:visibility="invisible" />
+
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:id="@+id/textViewHour20"
+                            android:layout_width="0dp"
+                            android:layout_height="40dp"
+                            android:layout_weight="2"
+                            android:gravity="center"
+                            android:text="@string/text_hour_20" />
+
+                        <TextView
+                            android:id="@+id/textViewKet20"
+                            android:layout_width="0dp"
+                            android:layout_height="40dp"
+                            android:layout_weight="2"
+                            android:gravity="center"
+                            android:onClick="openChatJam20"
+                            android:paddingLeft="10dp"
+                            android:paddingRight="10dp"
+                            android:text="@string/text_tidak_tersedia_small"
+                            android:textColor="@color/colorRed" />
+
+                        <Button
+                            android:id="@+id/buttonBookingJam20"
+                            android:layout_width="0dp"
+                            android:layout_height="40dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_weight="2"
+                            android:drawableLeft="@drawable/whatsapp24"
+                            android:onClick="openChatJam20"
+                            android:text="@string/text_pilih_small"
+                            android:visibility="invisible" />
+
+                    </TableRow>
+
+                </TableLayout>
+
+                <ProgressBar
+                    android:id="@+id/progressBarLoading"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/textViewPetunjuk"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:gravity="center"
+                    android:text="@string/text_pilih_tersedia_small" />
+            </LinearLayout>
+
+        </LinearLayout>
 
     </LinearLayout>
-
-</LinearLayout>
+</ScrollView>

@@ -51,6 +51,8 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
         // stored for future usage
         UserData.setPreference(this);
 
+        currentMonth = UserData.getPreferenceInt(Keys.CALENDAR_OPENED);
+
         textViewTglMasehi = (TextView) findViewById(R.id.textViewTglMasehi);
         textViewTglHijriyyah = (TextView) findViewById(R.id.textViewTglHijriyyah);
 
@@ -190,6 +192,7 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
 
         // known as new data for 1 february 2022
         String dataTag [] = objMasuk.toString().split(";");
+        String tglSplited [] = dataTag[1].split("-");
 
         Intent i = new Intent(this, DateSpecificActivity.class);
 
@@ -198,6 +201,10 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
         i.putExtra(Keys.LEGEND, dataTag[0] );
         // along with the date
         i.putExtra(Keys.DATE_CHOSEN, dataTag[1]);
+
+        // we save the temporarily month number
+        int monthNum = Integer.parseInt(tglSplited[1]);
+        UserData.savePreference(Keys.CALENDAR_OPENED, monthNum);
 
 
         startActivity(i);
@@ -351,7 +358,7 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
         // return back to 1st day
         dateNow.set(Calendar.DAY_OF_MONTH, 1);
 
-        if(currentMonth==0){
+        if(currentMonth==0 || currentMonth == -1){
 
             // this is for navigation purposes
 

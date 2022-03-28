@@ -217,6 +217,7 @@ public class DateSpecificActivity extends AppCompatActivity implements Navigator
 
         imageViewUserProfile = (ImageView) findViewById(R.id.imageViewUserProfile);
 
+
         dateComputerFormat = getIntent().getStringExtra(Keys.DATE_CHOSEN);
 
         // get the status apakah this date already defined in database?
@@ -266,6 +267,7 @@ public class DateSpecificActivity extends AppCompatActivity implements Navigator
         getSupportActionBar().setCustomView(R.layout.actionbar);
     }
 
+    int prof;
     private void updateUserProfile(){
 
        gender = UserData.getPreferenceInt(Keys.USER_GENDER);
@@ -279,14 +281,35 @@ public class DateSpecificActivity extends AppCompatActivity implements Navigator
 
     }
 
+    private void creatingDummySchedules(){
+
+        dataSchedule = new Schedule[5];
+
+        for(int x=0; x<5; x++){
+            Schedule sched = new Schedule();
+
+            sched.setDate_chosen(dateComputerFormat);
+            sched.setStatus(Keys.TOGGLE_OFF);
+            sched.setSpecific_hour(timeEntries[x]);
+            sched.setGender_therapist(gender);
+
+            dataSchedule[x] = sched;
+        }
+
+    }
+
+    String timeEntries [] = {"08:00", "10:00", "13:00", "16:00", "20:00"};
     private void createNewEntry(){
 
        // ShowDialog.shortMessage(this, "Creating new entries for 5 times in a day.");
 
         // we will create 5 different time
         // with 0 status(es)
-        String timeEntries [] = {"08:00", "10:00", "13:00", "16:00", "20:00"};
+
         description = "";
+
+        // this is dummy one for editing purposes
+       creatingDummySchedules();
 
         for(String jamSelected : timeEntries) {
 

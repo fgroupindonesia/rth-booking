@@ -24,7 +24,7 @@ public class PickDateActivity extends AppCompatActivity {
 
     TextView textViewBulanTahun;
     Spinner spinnerPickDate;
-    ImageView imageViewUserProfile;
+    ImageView imageViewUserProfile, imageViewProfesi;
 
 
     String dateText;
@@ -41,6 +41,8 @@ public class PickDateActivity extends AppCompatActivity {
         textViewBulanTahun = (TextView) findViewById(R.id.textViewBulanTahun);
         imageViewUserProfile = (ImageView) findViewById(R.id.imageViewUserProfile);
 
+        imageViewProfesi = (ImageView) findViewById(R.id.imageViewProfesi);
+
         centerTitleApp();
 
         updateMonth();
@@ -53,6 +55,8 @@ public class PickDateActivity extends AppCompatActivity {
         getSupportActionBar().setCustomView(R.layout.actionbar);
     }
 
+    int prof;
+
     private void updateUserProfile(){
 
         int  modeUser = UserData.getPreferenceInt(Keys.USER_GENDER);
@@ -63,6 +67,13 @@ public class PickDateActivity extends AppCompatActivity {
                 imageViewUserProfile.setImageResource(R.drawable.akhwat_logo);
             }
 
+        prof = UserData.getPreferenceInt(Keys.USER_PROFESSION);
+
+        if(prof == Keys.PROFESI_UMUM){
+            imageViewProfesi.setImageResource(R.drawable.umum_icon);
+        }else if(prof == Keys.PROFESI_PELAJAR){
+            imageViewProfesi.setImageResource(R.drawable.pelajar_icon);
+        }
 
     }
 

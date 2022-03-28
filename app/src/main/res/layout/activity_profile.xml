@@ -40,6 +40,60 @@
             android:textSize="30sp" />
 
         <LinearLayout
+            android:id="@+id/linearLayoutProfesi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:visibility="visible">
+
+            <LinearLayout
+                android:id="@+id/linearUmum"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:onClick="openChooseProfile"
+                android:orientation="vertical"
+                android:tag="umum">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/umum_icon" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/text_profesi_umum" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linearPelajar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:onClick="openChooseProfile"
+                android:orientation="vertical"
+                android:tag="pelajar">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/pelajar_icon" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/text_profesi_pelajar" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/linearLayoutProfile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -109,7 +163,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
-                android:onClick="openChooseProfile"
+                android:onClick="openChooseProfesi"
                 android:orientation="vertical"
                 android:tag="baru">
 
@@ -132,7 +186,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
-                android:onClick="openChooseProfile"
+                android:onClick="openChooseProfesi"
                 android:orientation="vertical"
                 android:tag="lama">
 
@@ -154,7 +208,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="gone">
 
             <TableLayout
                 android:layout_width="match_parent"
@@ -198,6 +253,7 @@
                         android:id="@+id/buttonCheck"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:enabled="false"
                         android:onClick="saveAndCheck"
                         android:text="@string/text_button_check" />
                 </TableRow>

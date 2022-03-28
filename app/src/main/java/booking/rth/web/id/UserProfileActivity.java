@@ -6,8 +6,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 
 import com.google.gson.Gson;
@@ -34,6 +36,9 @@ public class UserProfileActivity extends AppCompatActivity implements Navigator 
 
     int userid, gender;
 
+    ProgressBar progressBar2;
+    Button buttonOK;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +47,8 @@ public class UserProfileActivity extends AppCompatActivity implements Navigator 
         // for future usage
         UserData.setPreference(this);
 
+        buttonOK = (Button) findViewById(R.id.buttonOkProfile);
+        progressBar2 = (ProgressBar) findViewById(R.id.progressBar2);
         spinnerKelamin = (Spinner) findViewById(R.id.spinnerKelamin);
 
         editTextFullname = (EditText) findViewById(R.id.editTextFullname);
@@ -67,6 +74,8 @@ public class UserProfileActivity extends AppCompatActivity implements Navigator 
 
     }
 
+
+
     private void centerTitleApp(){
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.actionbar);
@@ -74,7 +83,7 @@ public class UserProfileActivity extends AppCompatActivity implements Navigator 
 
     private void updateUserProfile(){
 
-       gender = UserData.getPreferenceInt(Keys.USER_ID);
+       gender = UserData.getPreferenceInt(Keys.USER_GENDER);
 
         if(gender==Keys.MODE_IKHWAN){
             imageViewUserProfile.setImageResource(R.drawable.ikhwan_logo);
@@ -87,7 +96,7 @@ public class UserProfileActivity extends AppCompatActivity implements Navigator 
     private void getDetails(){
 
         WebRequest httpCall = new WebRequest(UserProfileActivity.this,UserProfileActivity.this);
-        httpCall.addData("id", String.valueOf(gender));
+        httpCall.addData("id", String.valueOf(userid));
 
         // we need to wait for the response
         httpCall.setWaitState(true);
@@ -106,9 +115,9 @@ public class UserProfileActivity extends AppCompatActivity implements Navigator 
 
         // gender 0 is female
         // gender 1 is male
-        int gender = 0;
+      gender = Keys.MODE_AKHWAT;
         if(spinnerKelamin.getSelectedItem().toString().equalsIgnoreCase("pria")){
-            gender = 1;
+            gender = Keys.MODE_IKHWAN;
         }
 
         WebRequest httpCall = new WebRequest(UserProfileActivity.this,UserProfileActivity.this);
@@ -119,7 +128,7 @@ public class UserProfileActivity extends AppCompatActivity implements Navigator 
         httpCall.addData("contact", getText(editTextNoKontak));
         httpCall.addData("full_name", getText(editTextFullname));
         httpCall.addData("gender", String.valueOf(gender));
-        httpCall.addData("id", String.valueOf(gender));
+        httpCall.addData("id", String.valueOf(userid));
 
         // we need to wait for the response
         httpCall.setWaitState(true);
@@ -127,6 +136,8 @@ public class UserProfileActivity extends AppCompatActivity implements Navigator 
         httpCall.setTargetURL(URLReference.UserUpdate);
         httpCall.execute();
 
+        progressBar2.setVisibility(View.VISIBLE);
+        buttonOK.setVisibility(View.GONE);
 
     }
 
@@ -141,6 +152,9 @@ public class UserProfileActivity extends AppCompatActivity implements Navigator 
 
         spinnerKelamin.setSelection(dataIn.getGender());
         //spinnerMembership.setSelection(dataIn.getMembership());
+
+        progressBar2.setVisibility(View.GONE);
+        buttonOK.setVisibility(View.VISIBLE);
 
     }
 
@@ -174,19 +188,13 @@ public class UserProfileActivity extends AppCompatActivity implements Navigator 
 
                 } else   if (urlTarget.contains(URLReference.UserUpdate)) {
 
-
-                    // applying the spinner selection towards main local variable stored
-                    if(spinnerKelamin.getSelectedItem().toString().equalsIgnoreCase("pria")){
-                        gender = Keys.MODE_IKHWAN;
-                    }else{
-                        gender = Keys.MODE_AKHWAT;
-                    }
-
-                    // stored locally
+                    // stored locally if success
                     UserData.savePreference(Keys.USER_GENDER, gender);
 
                     Intent i = new Intent(this, CalendarActivity.class);
                     startActivity(i);
+
+                   // ShowDialog.message(this, "user updated!" + gender);
 
                     finish();
 
@@ -195,8 +203,14 @@ public class UserProfileActivity extends AppCompatActivity implements Navigator 
 
             } else if (!RespondHelper.isValidRespond(respond)) {
 
-                //ShowDialog.message(this, "tidak ada data dari Server!");
-                finish();
+                ShowDialog.message(this, "Ada kesalahan dari Server!");
+                ShowDialog.message(this, respond);
+                //finish();
+
+                progressBar2.setVisibility(View.GONE);
+                buttonOK.setVisibility(View.VISIBLE);
+
+
 
             }
         } catch (Exception ex) {
