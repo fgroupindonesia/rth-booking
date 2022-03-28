@@ -448,10 +448,7 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
 
         if(chb.isChecked()){
 
-            if(!nama.toLowerCase().contains("ruqyah")){
-                help.addItem(nama);
-            }
-            // because ruqyah will not be counted!
+              help.addItem(nama);
 
         }else{
                 help.removeItem(nama);
@@ -617,12 +614,6 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
             for (String item : help.getItems()) {
                 mes.append("\n" + i + "." + item );
                 i++;
-            }
-
-            // ruqyah will be sent to whatsapp
-            // but not calculated on the order list
-            if(checkboxRuqyah.isChecked()){
-                mes.append("\n" + i + ".Ruqyah Syariyyah");
             }
 
             mes.append("\n");

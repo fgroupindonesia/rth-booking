@@ -56,9 +56,27 @@ public class OrderHelper {
         return orderList;
     }
 
+    private boolean containRuqyah(){
+        for(String n: orderList){
+            if(n.toLowerCase().contains("ruqyah")){
+                return true;
+
+            }
+        }
+
+        return false;
+    }
+
     public String getTotalPrice() {
 
-        totalPrice = orderList.size() * myPrice;
+        if(!containRuqyah()){
+            totalPrice = orderList.size() * myPrice;
+        }else{
+            // we deduct the ruqyah because it is from InfaQ
+            // not calculated from here
+
+            totalPrice = (orderList.size()-1) * myPrice;
+        }
 
         DecimalFormat kursIndonesia = (DecimalFormat) DecimalFormat.getCurrencyInstance();
         DecimalFormatSymbols formatRp = new DecimalFormatSymbols();
@@ -69,7 +87,18 @@ public class OrderHelper {
 
         kursIndonesia.setDecimalFormatSymbols(formatRp);
         String textna = kursIndonesia.format(totalPrice);
-        return textna.substring(0, textna.length()-3);
+
+        String akhir = textna.substring(0, textna.length() - 3);
+
+        // if only ruqyah
+        // so the Rp.0 will be removed totally
+        if(containRuqyah() && totalPrice==0){
+            akhir = "";
+        }
+
+        // but if any other item exist
+        // so let it be with Rp.109.20901 etc...
+        return akhir;
     }
 
 }
