@@ -1,4 +1,4 @@
-package booking.rth.web.id;
+package booking1.rth.web.id;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,7 +11,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import helper.ShowDialog;
 import helper.TextChangedListener;
 import object.Keys;
 import shared.UserData;

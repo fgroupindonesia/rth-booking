@@ -1,10 +1,11 @@
-package booking.rth.web.id;
+package booking1.rth.web.id;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TableRow;
@@ -19,13 +20,17 @@ import org.json.JSONObject;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Locale;
 
 import helper.Navigator;
 import helper.RespondHelper;
 import helper.ScheduleCounter;
+import helper.ScheduleOverall;
 import helper.ShowDialog;
 import helper.URLReference;
 import helper.WebRequest;
@@ -38,7 +43,8 @@ import shared.UserData;
 
 public class CalendarActivity extends AppCompatActivity implements Navigator {
 
-    TextView textViewNamaBulan, textViewTglMasehi, textViewTglHijriyyah;
+    TextView textViewNamaBulan, textViewTglMasehi,
+            textViewOverallData, textViewTglHijriyyah;
     TableRow tableRow1, tableRow2, tableRow3, tableRow4, tableRow5;
     ImageView imageViewUserProfile, imageViewPreviousMonth, imageViewNextMonth;
     int currentMonth = 0, gender;
@@ -55,6 +61,7 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
 
         textViewTglMasehi = (TextView) findViewById(R.id.textViewTglMasehi);
         textViewTglHijriyyah = (TextView) findViewById(R.id.textViewTglHijriyyah);
+        textViewOverallData = (TextView) findViewById(R.id.textViewOverallData);
 
         tableRow1 = (TableRow) findViewById(R.id.tableRow1);
         tableRow2 = (TableRow) findViewById(R.id.tableRow2);
@@ -429,8 +436,12 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
 
     // add the data into the pool
     ScheduleCounter scheduleMachine = new ScheduleCounter();
+    StringBuffer stb = new StringBuffer();
+    ScheduleOverall schedOver = new ScheduleOverall();
 
     private void addingDataRow(Schedule objectIn){
+
+        schedOver.populate(objectIn);
 
         //ShowDialog.message(this, "Adding into row... " + objectIn.getDate_chosen());
 
@@ -533,6 +544,22 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
 
                     Schedule object [] = gson.fromJson(mJson, Schedule[].class);
 
+                    Arrays.sort(object, new Comparator<Schedule>() {
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                        Date d1, d2;
+                        public int compare(Schedule o1, Schedule o2) {
+
+                            try {
+                                d1 = sdf.parse(o1.getDate_chosen());
+                                d2 = sdf.parse(o2.getDate_chosen());
+                            } catch (Exception ex){
+
+                            }
+
+                            return d1.compareTo(d2);
+                        }
+                    });
+
                     // this is for specific month only
                     // data returned is restricted by month of current year
 
@@ -541,6 +568,12 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
                     }
 
 
+                    // do once more for filtering layout
+                    for(Schedule single:object){
+                        schedOver.makeSingleDay(single);
+                    }
+
+                   textViewOverallData.setText(schedOver.getCompleteText());
 
                 }else if(urlTarget.contains(URLReference.AdhanWebsite)){
 

@@ -1,4 +1,4 @@
-package booking.rth.web.id;
+package booking1.rth.web.id;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -6,10 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.widget.ProgressBar;
 
-import helper.ErrorLogger;
-import object.Keys;
 import shared.UserData;
 
 public class LoadingActivity extends AppCompatActivity {

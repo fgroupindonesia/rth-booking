@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="booking.rth.web.id">
+    package="booking1.rth.web.id">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -16,19 +16,18 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".DateSpecificActivity" />
-        <activity android:name=".UserProfileActivity" />
-        <activity android:name=".CalendarActivity" />
-        <activity android:name=".LoginActivity" />
-        <activity android:name=".BookingScheduleActivity" />
-        <activity android:name=".PickDateActivity" />
-        <activity android:name=".ClientProfileActivity" />
-        <activity android:name=".TutorialActivity" />
-        <activity android:name=".WelcomeActivity" />
-        <activity android:name=".LoadingActivity">
+        <activity android:name="booking1.rth.web.id.DateSpecificActivity" />
+        <activity android:name="booking1.rth.web.id.UserProfileActivity" />
+        <activity android:name="booking1.rth.web.id.CalendarActivity" />
+        <activity android:name="booking1.rth.web.id.LoginActivity" />
+        <activity android:name="booking1.rth.web.id.BookingScheduleActivity" />
+        <activity android:name="booking1.rth.web.id.PickDateActivity" />
+        <activity android:name="booking1.rth.web.id.ClientProfileActivity" />
+        <activity android:name="booking1.rth.web.id.TutorialActivity" />
+        <activity android:name="booking1.rth.web.id.WelcomeActivity" />
+        <activity android:name="booking1.rth.web.id.LoadingActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

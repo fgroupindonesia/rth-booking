@@ -10,6 +10,7 @@ public class OrderHelper {
 
     int totalPrice = 0;
     int myPrice = 0;
+    String message = "";
 
     public OrderHelper() {
         // default is general for 30.000
@@ -19,8 +20,10 @@ public class OrderHelper {
     public OrderHelper(int workMode) {
         if (workMode == Keys.PROFESI_UMUM) {
             myPrice = 30000;
+            message = "[tarif umum]";
         } else if (workMode == Keys.PROFESI_PELAJAR) {
             myPrice = 15000;
+            message = "[tarif pelajar]";
         }
     }
 
@@ -68,14 +71,21 @@ public class OrderHelper {
     }
 
     public String getTotalPrice() {
+        String akhir = null;
 
         if(!containRuqyah()){
+            akhir = message + " x " + orderList.size();
             totalPrice = orderList.size() * myPrice;
         }else{
             // we deduct the ruqyah because it is from InfaQ
             // not calculated from here
-
-            totalPrice = (orderList.size()-1) * myPrice;
+            if(orderList.size()>1){
+                akhir = message + " x " + (orderList.size()-1) + " + infaQ";
+            }else{
+                // if only ruqyah
+                akhir = " + infaQ";
+            }
+             totalPrice = (orderList.size()-1) * myPrice;
         }
 
         DecimalFormat kursIndonesia = (DecimalFormat) DecimalFormat.getCurrencyInstance();
@@ -88,16 +98,9 @@ public class OrderHelper {
         kursIndonesia.setDecimalFormatSymbols(formatRp);
         String textna = kursIndonesia.format(totalPrice);
 
-        String akhir = textna.substring(0, textna.length() - 3);
+        // String akhir = textna.substring(0, textna.length() - 3);
+        // we hide the total price at the moment
 
-        // if only ruqyah
-        // so the Rp.0 will be removed totally
-        if(containRuqyah() && totalPrice==0){
-            akhir = "";
-        }
-
-        // but if any other item exist
-        // so let it be with Rp.109.20901 etc...
         return akhir;
     }
 

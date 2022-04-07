@@ -1,17 +1,24 @@
 apply plugin: 'com.android.application'
-
 android {
+    signingConfigs {
+        release {
+            storeFile file('D:\\java\\android\\RTHBookingSchedule\\keystorbooking1.jks')
+            storePassword 'callMe_28'
+            keyAlias 'key0'
+            keyPassword 'callMe_28'
+        }
+    }
     compileSdkVersion 30
-   // buildToolsVersion "32.0.0"
+    // buildToolsVersion "32.0.0"
     buildToolsVersion "30.0.2"
 
     defaultConfig {
-        applicationId "booking.rth.web.id"
+        applicationId "booking1.rth.web.id"
         minSdkVersion 16
         targetSdkVersion 30
-        versionCode 8
-        versionName "1.7"
-
+        versionCode 10
+        versionName "1.9"
+        signingConfig signingConfigs.release
     }
 
     buildTypes {

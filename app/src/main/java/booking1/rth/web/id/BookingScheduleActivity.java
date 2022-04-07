@@ -1,11 +1,10 @@
-package booking.rth.web.id;
+package booking1.rth.web.id;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -47,7 +46,6 @@ import object.Hijri;
 import object.Keys;
 import object.Month;
 import object.Schedule;
-import object.User;
 import object.Weekday;
 import shared.UserData;
 
@@ -412,13 +410,9 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
             buttonTreatmentOK.setVisibility(View.VISIBLE);
             textViewEstimasiBiaya.setVisibility(View.VISIBLE);
             String totalText = help.getTotalPrice();
-            String pesanLain = "";
 
-            if(checkboxRuqyah.isChecked()){
-                pesanLain = " + infaQ";
-            }
 
-            textViewEstimasiBiaya.setText("Estimasi Biaya : " + totalText + pesanLain);
+            textViewEstimasiBiaya.setText("Estimasi Biaya : " + totalText);
         }else{
             buttonTreatmentOK.setVisibility(View.GONE);
             textViewEstimasiBiaya.setVisibility(View.GONE);
@@ -545,12 +539,18 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
             ex.printStackTrace();
         }
 
-
     }
 
     public String getAlbumStorageDir() {
         String path = Environment.getExternalStorageDirectory()
                 + "/Android/data/" + getApplicationContext().getPackageName();
+
+        // creating file folder first
+        File file = new File(path);
+        if(!file.exists()) {
+            file.mkdirs();
+        }
+
         return path;
     }
 

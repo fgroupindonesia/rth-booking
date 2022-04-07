@@ -1,4 +1,4 @@
-package booking.rth.web.id;
+package booking1.rth.web.id;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -339,7 +339,7 @@ public class DateSpecificActivity extends AppCompatActivity implements Navigator
 
         try {
             Date date = formatterParser.parse(dateComputerFormat);
-            SimpleDateFormat formatter = new SimpleDateFormat("dd MMMM yyyy", new Locale("ID"));
+            SimpleDateFormat formatter = new SimpleDateFormat("EEEE dd MMMM yyyy", new Locale("ID"));
              tglPilihanIndo = formatter.format(date);
         }catch (Exception ex){
 
