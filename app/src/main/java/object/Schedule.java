@@ -12,6 +12,11 @@ public class Schedule {
     private String date_created;
     private String description;
 
+    @Override
+    public String toString(){
+        return this.getDate_chosen() + " " + this.getSpecific_hour();
+    }
+
     public String getSpecific_hour() {
         return specific_hour;
     }

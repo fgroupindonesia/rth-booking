@@ -522,7 +522,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:fillViewport="true" >
 
             <TextView
                 android:id="@+id/textView12"
@@ -534,14 +535,15 @@
 
             <TextView
                 android:id="@+id/textViewTglMasehi"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
+                android:onClick="goToLineToday"
                 android:text="@string/text_loading" />
 
             <TextView
                 android:id="@+id/textViewTglHijriyyah"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:text="@string/text_loading" />
@@ -551,16 +553,19 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
                 android:text="@string/text_overall"
                 android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/textViewOverallData"
+            <EditText
+                android:id="@+id/editTextOverallData"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:text="@string/text_loading" />
+                android:editable="false"
+                android:enabled="true"
+                android:inputType="textMultiLine|textImeMultiLine"
+                android:singleLine="false"
+                android:textSize="14sp" />
+
         </LinearLayout>
 
     </LinearLayout>
