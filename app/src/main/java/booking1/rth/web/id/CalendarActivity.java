@@ -39,6 +39,7 @@ import helper.WebRequest;
 import object.Hijri;
 import object.Keys;
 import object.Month;
+import object.Ruqyah;
 import object.Schedule;
 import object.Weekday;
 import shared.UserData;
@@ -183,7 +184,7 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
         // get the schedule for this specific gender on
         // this specific month of the year
         httpCall.addData("month_year", mYear);
-        httpCall.addData("gender", String.valueOf(gender));
+        httpCall.addData("gender_therapist", String.valueOf(gender));
 
         // we need to wait for the response
         httpCall.setWaitState(true);
@@ -192,6 +193,20 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
         httpCall.execute();
 
         // ShowDialog.message(this, "Anda posting timing " + mYear);
+
+        // another data call for ruqyah data
+        WebRequest httpCallR = new WebRequest(CalendarActivity.this, CalendarActivity.this);
+
+        // get the ruqyah data for this specific gender on
+        // this specific month of the year
+        httpCallR.addData("month_year", mYear);
+        httpCallR.addData("gender_therapist", String.valueOf(gender));
+
+        // we need to wait for the response
+        httpCallR.setWaitState(true);
+        httpCallR.setRequestMethod(WebRequest.POST_METHOD);
+        httpCallR.setTargetURL(URLReference.RuqyahAll);
+        httpCallR.execute();
 
     }
 
@@ -439,6 +454,67 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
 
     }
 
+    private void recoloringDataRow(Ruqyah objectIn){
+        // now applying into the calendar UI
+        int totalBox = 35;
+        int currentBox = 1;
+        int rowCount = 1;
+        int i = 0;
+        int limitIndex = 6;
+
+        View v = null;
+        TextView dummy = null;
+        String dataTag[] = null;
+
+        boolean found = false;
+
+        // matching into the calendar (UI)
+        while (!found) {
+
+            if (rowCount == 1) {
+                v = tableRow1.getChildAt(i);
+            } else if (rowCount == 2) {
+                v = tableRow2.getChildAt(i);
+            } else if (rowCount == 3) {
+                v = tableRow3.getChildAt(i);
+            } else if (rowCount == 4) {
+                v = tableRow4.getChildAt(i);
+            } else if (rowCount == 5) {
+                v = tableRow5.getChildAt(i);
+            }
+            //do something with your child element
+            dummy = (TextView) v;
+
+            if (dummy.getTag() != null) {
+                dataTag = dummy.getTag().toString().split(";");
+            }
+
+            // value is based upon
+            // LEGEND;yyyy-mm-dd
+            // important to use dataTag[1];
+
+            String valTag = null;
+            // check the text numerical with the date given from data_chosen of ruqyah
+            if (scheduleMachine.isDateEqual(dummy, objectIn)) {
+                if (objectIn.getStatus() == Keys.TOGGLE_ON) {
+                    valTag = Keys.LEGEND_PINK + ";" + dataTag[1];
+                    dummy.setTag(valTag);
+                    dummy.setBackgroundResource(R.drawable.circular_pink);
+                }
+                found = true;
+            }
+
+            if (i == 6) {
+                i = 0;
+                rowCount++;
+            } else {
+                i++;
+            }
+
+            currentBox++;
+
+        }
+    }
 
     // add the data into the pool
     ScheduleCounter scheduleMachine = new ScheduleCounter();
@@ -547,13 +623,15 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
 
             Gson gson = new Gson();
 
+            JsonParser parser = new JsonParser();
+
             if (RespondHelper.isValidRespond(respond)) {
 
                 if (urlTarget.contains(URLReference.ScheduleAll)) {
 
                     JSONArray jsons = RespondHelper.getArray(respond, "multi_data");
 
-                    JsonParser parser = new JsonParser();
+
                     JsonElement mJson = parser.parse(jsons.toString());
 
                     Schedule object[] = gson.fromJson(mJson, Schedule[].class);
@@ -592,8 +670,6 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
 
                     editTextOverallData.setText(schedOver.getCompleteText());
 
-
-
                 } else if (urlTarget.contains(URLReference.AdhanWebsite)) {
 
                     //ShowDialog.message(this, respond);
@@ -613,6 +689,37 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
                             + dataHijriyyah.getDay() + " "
                             + dataHijriyyahMonth.getEn() + " "
                             + dataHijriyyah.getYear());
+
+                }else if(urlTarget.contains(URLReference.RuqyahAll)){
+                    JSONArray jsons = RespondHelper.getArray(respond, "multi_data");
+
+                    JsonElement mJson = parser.parse(jsons.toString());
+
+                    Ruqyah object[] = gson.fromJson(mJson, Ruqyah[].class);
+
+                    Arrays.sort(object, new Comparator<Ruqyah>() {
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                        Date d1, d2;
+
+                        public int compare(Ruqyah o1, Ruqyah o2) {
+
+                            try {
+                                d1 = sdf.parse(o1.getDate_chosen());
+                                d2 = sdf.parse(o2.getDate_chosen());
+                            } catch (Exception ex) {
+
+                            }
+
+                            return d1.compareTo(d2);
+                        }
+                    });
+
+                    // this is for specific month only
+                    // data returned is restricted by month of current year
+
+                    for (Ruqyah single : object) {
+                        recoloringDataRow(single);
+                    }
 
                 }
 

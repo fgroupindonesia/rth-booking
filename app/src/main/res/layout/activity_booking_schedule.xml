@@ -104,7 +104,8 @@
                 android:id="@+id/linearTreatmentPick"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="visible">
 
                 <TableLayout
                     android:layout_width="match_parent"
@@ -364,7 +365,7 @@
                             android:paddingLeft="10dp"
                             android:paddingRight="10dp"
                             android:text="@string/text_tidak_tersedia_small"
-                            android:textColor="@color/colorRed" />
+                            android:textColor="@color/red" />
 
                         <Button
                             android:id="@+id/buttonBookingJam08"
@@ -401,7 +402,7 @@
                             android:paddingLeft="10dp"
                             android:paddingRight="10dp"
                             android:text="@string/text_tidak_tersedia_small"
-                            android:textColor="@color/colorRed" />
+                            android:textColor="@color/red" />
 
                         <Button
                             android:id="@+id/buttonBookingJam10"
@@ -438,7 +439,7 @@
                             android:paddingLeft="10dp"
                             android:paddingRight="10dp"
                             android:text="@string/text_tidak_tersedia_small"
-                            android:textColor="@color/colorRed" />
+                            android:textColor="@color/red" />
 
                         <Button
                             android:id="@+id/buttonBookingJam13"
@@ -475,7 +476,7 @@
                             android:paddingLeft="10dp"
                             android:paddingRight="10dp"
                             android:text="@string/text_tidak_tersedia_small"
-                            android:textColor="@color/colorRed" />
+                            android:textColor="@color/red" />
 
                         <Button
                             android:id="@+id/buttonBookingJam16"
@@ -512,7 +513,7 @@
                             android:paddingLeft="10dp"
                             android:paddingRight="10dp"
                             android:text="@string/text_tidak_tersedia_small"
-                            android:textColor="@color/colorRed" />
+                            android:textColor="@color/red" />
 
                         <Button
                             android:id="@+id/buttonBookingJam20"
@@ -543,6 +544,30 @@
                     android:layout_marginTop="20dp"
                     android:gravity="center"
                     android:text="@string/text_pilih_tersedia_small" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linearWarningRuqyah"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical"
+                tools:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/imageViewRuqyah"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    app:srcCompat="@drawable/warning64" />
+
+                <TextView
+                    android:id="@+id/textView14"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/text_maaf_ruqyah"
+                    android:textStyle="bold" />
             </LinearLayout>
 
         </LinearLayout>

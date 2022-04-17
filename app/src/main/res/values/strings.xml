@@ -4,7 +4,10 @@
     <string name="text_selamat">Selamat Datang!</string>
     <string name="text_tgl_hari_ini">Tanggal Hari Ini:</string>
     <string name="text_overall">Overall:</string>
+    <string name="text_maaf_ruqyah">Maaf, sedang Ruqyah!\nSilahkan pilih tanggal lain...</string>
     <string name="text_loading">Loading...</string>
+    <string name="text_ruqyah_mode">Hari ini Khusus Ruqyah Only</string>
+    <string name="text_rate_app">Bantu kami agar melayani lebih baik lagi... Lakukan Rate App sejenak ya?</string>
     <string name="text_nama_lengkap_anda">Nama Lengkap anda...</string>
     <string name="text_nomer_whatsapp">Nomer Whatsapp...</string>
     <string name="text_tutorial_big">Tutorial Booking Jadwal</string>
@@ -15,6 +18,7 @@
     <string name="text_tutorial_step_5">5.Kirim &amp; tunggu Konfirmasi</string>
     <string name="text_profil_ikhwan">Ikhwan</string>
     <string name="text_profil_akhwat">Akhwat</string>
+    <string name="text_profil_workshop">Workshop</string>
     <string name="text_profesi_umum">Umum</string>
     <string name="text_profesi_pelajar">Pelajar</string>
     <string name="text_profil_baru">Peserta Baru</string>
@@ -75,6 +79,7 @@
 
     <string name="text_estimasi_big">Estimasi Biaya : </string>
 
+    <string name="text_legend_ruqyah_day">Ruqyah Day</string>
     <string name="text_legend_belum_terjadwal">Belum Terjadwal</string>
     <string name="text_legend_mulai_sesi">Terisi beberapa Jadwal </string>
     <string name="text_legend_semua_tidak">Semua Jadwal Sudah Penuh</string>

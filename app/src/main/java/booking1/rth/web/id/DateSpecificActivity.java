@@ -23,6 +23,7 @@ import com.google.gson.JsonParser;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -33,6 +34,7 @@ import helper.ShowDialog;
 import helper.URLReference;
 import helper.WebRequest;
 import object.Keys;
+import object.Ruqyah;
 import object.Schedule;
 import shared.UserData;
 
@@ -57,6 +59,8 @@ public class DateSpecificActivity extends AppCompatActivity implements Navigator
     ProgressBar progressBarLoading;
 
     LinearLayout linearToggleHours;
+
+    Switch switchRuqyahMode;
 
     public String getScheduleDescription(String hour){
        String v = null;
@@ -190,6 +194,7 @@ public class DateSpecificActivity extends AppCompatActivity implements Navigator
         // stored for future usage
         UserData.setPreference(this);
 
+        switchRuqyahMode = (Switch) findViewById(R.id.switchRuqyahMode);
 
         progressBarLoading = (ProgressBar) findViewById(R.id.progressBarLoading);
 
@@ -216,7 +221,6 @@ public class DateSpecificActivity extends AppCompatActivity implements Navigator
         hideAllDesc();
 
         imageViewUserProfile = (ImageView) findViewById(R.id.imageViewUserProfile);
-
 
         dateComputerFormat = getIntent().getStringExtra(Keys.DATE_CHOSEN);
 
@@ -252,15 +256,18 @@ public class DateSpecificActivity extends AppCompatActivity implements Navigator
 
         if(!legend.equalsIgnoreCase("white")){
             getDataServer();
+            checkRuqyahMode();
         }else{
             // when it's coming from white status
             // means everything needs to be ready 0 status(es)
             createNewEntry();
-
         }
 
 
     }
+
+
+
 
     private void centerTitleApp(){
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
@@ -298,6 +305,74 @@ public class DateSpecificActivity extends AppCompatActivity implements Navigator
 
     }
 
+    private String convertDateFormat(String in, String dateFormatResult, int languageResult) {
+
+        String res = null;
+
+        SimpleDateFormat originalFormat = new SimpleDateFormat("EEEE dd-MMM-yyyy", new Locale("ID"));
+        DateFormat targetFormat = null;
+
+        if (languageResult == Keys.LANGUAGE_EN) {
+            targetFormat = new SimpleDateFormat(dateFormatResult);
+        } else {
+            targetFormat = new SimpleDateFormat(dateFormatResult, new Locale("ID"));
+        }
+
+        try {
+            Date date = originalFormat.parse(in);
+            res = targetFormat.format(date);
+        } catch (Exception ex) {
+
+        }
+
+        return res;
+
+    }
+
+    private void checkRuqyahMode() {
+
+        WebRequest httpCall = new WebRequest(DateSpecificActivity.this, DateSpecificActivity.this);
+
+        httpCall.addData("date_chosen", dateComputerFormat);
+        httpCall.addData("gender_therapist", String.valueOf(gender));
+
+        // we need to wait for the response
+        httpCall.setWaitState(true);
+        httpCall.setDownloadState(false);
+        httpCall.setMultipartform(false);
+
+        httpCall.setRequestMethod(WebRequest.POST_METHOD);
+        httpCall.setTargetURL(URLReference.RuqyahCheck);
+        httpCall.execute();
+
+    }
+
+    int toggleStat;
+    public void toggleRuqyahMode(View v) {
+
+        if(switchRuqyahMode.isChecked()){
+            toggleStat = 1;
+        }else{
+            toggleStat = 0;
+        }
+
+        WebRequest httpCall = new WebRequest(DateSpecificActivity.this, DateSpecificActivity.this);
+
+        httpCall.addData("status", String.valueOf(toggleStat));
+        httpCall.addData("date_chosen", dateComputerFormat);
+        httpCall.addData("gender_therapist", String.valueOf(gender));
+
+        // we need to wait for the response
+        httpCall.setWaitState(true);
+        httpCall.setDownloadState(false);
+        httpCall.setMultipartform(false);
+
+        httpCall.setRequestMethod(WebRequest.POST_METHOD);
+        httpCall.setTargetURL(URLReference.RuqyahAdd);
+        httpCall.execute();
+
+    }
+
     String timeEntries [] = {"08:00", "10:00", "13:00", "16:00", "20:00"};
     private void createNewEntry(){
 
@@ -328,6 +403,19 @@ public class DateSpecificActivity extends AppCompatActivity implements Navigator
             httpCall.execute();
 
         }
+
+        // now we are also creating the ruqyah schedules for empty one
+        WebRequest httpCall = new WebRequest(DateSpecificActivity.this, DateSpecificActivity.this);
+
+        httpCall.addData("status", String.valueOf(Keys.TOGGLE_OFF));
+        httpCall.addData("gender_therapist", String.valueOf(gender));
+        httpCall.addData("date_chosen", dateComputerFormat);
+
+        // we need to wait for the response
+        httpCall.setWaitState(true);
+        httpCall.setRequestMethod(WebRequest.POST_METHOD);
+        httpCall.setTargetURL(URLReference.RuqyahAdd);
+        httpCall.execute();
 
     }
 
@@ -734,6 +822,8 @@ public class DateSpecificActivity extends AppCompatActivity implements Navigator
 
     }
 
+    Ruqyah dataRuqyah;
+
     @Override
     public void onSuccess(String urlTarget, String respond) {
 
@@ -748,7 +838,19 @@ public class DateSpecificActivity extends AppCompatActivity implements Navigator
 
             if (RespondHelper.isValidRespond(respond)) {
 
-                if (urlTarget.contains(URLReference.ScheduleDetail)) {
+                if (urlTarget.contains(URLReference.RuqyahCheck)) {
+
+                    JSONObject jsons = RespondHelper.getObject(respond, "multi_data");
+
+                    JsonElement mJson =  parser.parse(jsons.toString());
+                    dataRuqyah = objectG.fromJson(mJson, Ruqyah.class);
+
+                    // this is for specific date with status 1
+                    if(dataRuqyah.getStatus() == 1 && dataRuqyah.getGender_therapist() == gender && dataRuqyah.getDate_chosen().equalsIgnoreCase(dateComputerFormat)) {
+                        switchRuqyahMode.setChecked(true);
+                    }
+
+                }else if (urlTarget.contains(URLReference.ScheduleDetail)) {
 
                     JSONArray jsons = RespondHelper.getArray(respond, "multi_data");
 

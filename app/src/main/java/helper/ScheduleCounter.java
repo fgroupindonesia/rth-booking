@@ -4,6 +4,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import object.Ruqyah;
 import object.Schedule;
 import object.ScheduleDay;
 
@@ -25,6 +26,28 @@ public class ScheduleCounter {
            if(num == day){
                valid = true;
            }
+        }
+
+        return valid;
+
+    }
+
+    public boolean isDateEqual(TextView txt, Ruqyah obj){
+
+        boolean valid = false;
+
+        // the date from the TextView is actually a single numerical
+        // ie: 1 not 01
+        String val = txt.getText().toString();
+        if(!val.isEmpty()) {
+            int num = Integer.parseInt(val);
+
+            // the date is using yyyy-mm-dd format
+            int day = Integer.parseInt(obj.getDate_chosen().split("-")[2]);
+
+            if(num == day){
+                valid = true;
+            }
         }
 
         return valid;

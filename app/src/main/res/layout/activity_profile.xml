@@ -45,7 +45,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="horizontal"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <LinearLayout
                 android:id="@+id/linearUmum"
@@ -99,7 +99,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="horizontal"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <LinearLayout
                 android:id="@+id/linearIkhwan"
@@ -146,6 +146,27 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="@string/text_profil_akhwat" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linearWorkshop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:onClick="openWebWorkshopForm"
+                android:orientation="vertical" >
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/group" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/text_profil_workshop" />
             </LinearLayout>
         </LinearLayout>
 

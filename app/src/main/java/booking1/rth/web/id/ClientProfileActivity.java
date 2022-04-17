@@ -4,6 +4,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -12,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import helper.TextChangedListener;
+import helper.URLReference;
 import object.Keys;
 import shared.UserData;
 
@@ -81,6 +83,14 @@ public class ClientProfileActivity extends AppCompatActivity {
         // this is precaution
         // if the user didnt fill any data
         setEditTextListeners();
+    }
+
+    public void openWebWorkshopForm(View v){
+
+            Intent n = new Intent(Intent.ACTION_VIEW, Uri.parse(URLReference.RegistrationWorkshopPage));
+            n.setPackage("com.android.chrome");
+            startActivity(n);
+
     }
 
     private void setEditTextListeners(){

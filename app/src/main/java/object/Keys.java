@@ -10,7 +10,8 @@ public class Keys {
             USER_GENDER = "USER_GENDER", USER_ID = "USER_ID",
             USER_USAGE = "USER_USAGE",
             USER_FORM_STATUS_COMPLETED = "USER_FORM_STATUS_COMPLETED",
-            USER_PROFESSION = "USER_PROFESSION", CALENDAR_OPENED = "CALENDAR_OPENED";
+            USER_PROFESSION = "USER_PROFESSION", CALENDAR_OPENED = "CALENDAR_OPENED",
+            RATE_APP_PREVIOUS = "RATE_APP_PREVIOUS";
 
     public static final int MODE_IKHWAN = 1, MODE_AKHWAT = 0;
     public static final int MANAGEMENT = 1, CLIENT = 2;
@@ -27,7 +28,7 @@ public class Keys {
 
     public static final String LEGEND_GREEN = "green",
             LEGEND_ORANGE = "orange", LEGEND_RED = "red",
-            LEGEND_WHITE = "white";
+            LEGEND_WHITE = "white", LEGEND_PINK = "pink";
 
     // used for toggling the hour or desc text shown
     public static final String MODE_DESCRIPTION = "DESC", MODE_HOUR = "HOUR";

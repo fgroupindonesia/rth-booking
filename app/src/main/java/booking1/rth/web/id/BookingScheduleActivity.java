@@ -3,14 +3,18 @@ package booking1.rth.web.id;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
@@ -27,7 +31,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.nio.channels.FileChannel;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -45,6 +51,7 @@ import helper.WhatsappSender;
 import object.Hijri;
 import object.Keys;
 import object.Month;
+import object.Ruqyah;
 import object.Schedule;
 import object.Weekday;
 import shared.UserData;
@@ -64,7 +71,7 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
     String dateChosen, NO_RTH = "+6285871341474",
             usName, hourSelected, wa;
 
-    LinearLayout linearTreatmentPick, linearBooking;
+    LinearLayout linearTreatmentPick, linearBooking, linearWarningRuqyah;
 
     int gender;
     // 1 : male
@@ -77,10 +84,14 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
 
     ProgressBar progressBarLoading;
 
-    ImageView imageViewUserProfile, imageViewProfesi;
+    ImageView imageViewUserProfile, imageViewProfesi, imageViewRuqyah;
     WhatsappSender waSender;
 
     View bottomView;
+
+    // limit booking is before this hour
+    int hourBeforeBooked = 1;
+    Animation animBounce;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +118,7 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
         buttonTreatmentOK = (Button) findViewById(R.id.buttonTreatmentOK);
         linearTreatmentPick = (LinearLayout) findViewById(R.id.linearTreatmentPick);
         linearBooking = (LinearLayout) findViewById(R.id.linearBookingTable);
+        linearWarningRuqyah = (LinearLayout) findViewById(R.id.linearWarningRuqyah);
 
         textViewEstimasiBiaya = (TextView) findViewById(R.id.textViewEstimasiBiaya);
         textViewDateIslamic = (TextView) findViewById(R.id.textViewDateIslamic);
@@ -145,6 +157,7 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
 
         imageViewUserProfile = (ImageView) findViewById(R.id.imageViewUserProfile);
         imageViewProfesi = (ImageView) findViewById(R.id.imageViewProfesi);
+        imageViewRuqyah = (ImageView) findViewById(R.id.imageViewRuqyah);
 
         // updating gender here
         updateUserProfile();
@@ -180,11 +193,17 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
 
         showLoading(true);
         // if this person is a new member
-        if(!UserData.getPreferenceBoolean(Keys.USER_REGISTER_STATUS)){
+        if (!UserData.getPreferenceBoolean(Keys.USER_REGISTER_STATUS)) {
             // directly show the timetable (jadwal)
             // and choose the treatment on website form
             showBookingTable(true);
+            showTreatmentOptions(false);
+
         }
+
+        // for animated ruqyah purposes only
+        animBounce = AnimationUtils.loadAnimation(this, R.anim.blinking);
+
 
     }
 
@@ -229,6 +248,27 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
 
     }
 
+    private void checkRuqyahMode() {
+
+        WebRequest httpCall = new WebRequest(BookingScheduleActivity.this, BookingScheduleActivity.this);
+
+        String dateAmrik = convertDateFormat(dateChosen, "yyyy-MM-dd", Keys.LANGUAGE_EN);
+
+        httpCall.addData("date_chosen", dateAmrik);
+        httpCall.addData("gender_therapist", String.valueOf(gender));
+
+        // we need to wait for the response
+        httpCall.setWaitState(true);
+        httpCall.setDownloadState(false);
+        httpCall.setMultipartform(false);
+
+        httpCall.setRequestMethod(WebRequest.POST_METHOD);
+        httpCall.setTargetURL(URLReference.RuqyahCheck);
+        httpCall.execute();
+
+   //     ShowDialog.message(this, "Ruqyah is checked! " + dateAmrik);
+    }
+
     private void centerTitleApp() {
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.actionbar);
@@ -252,17 +292,17 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
 
     }
 
-    private String convertDateFormat(String in, String dateFormat, int language) {
+    private String convertDateFormat(String in, String dateFormatResult, int languageResult) {
 
         String res = null;
 
         SimpleDateFormat originalFormat = new SimpleDateFormat("EEEE dd-MMM-yyyy", new Locale("ID"));
         DateFormat targetFormat = null;
 
-        if (language == Keys.LANGUAGE_EN) {
-            targetFormat = new SimpleDateFormat(dateFormat);
+        if (languageResult == Keys.LANGUAGE_EN) {
+            targetFormat = new SimpleDateFormat(dateFormatResult);
         } else {
-            targetFormat = new SimpleDateFormat(dateFormat, new Locale("ID"));
+            targetFormat = new SimpleDateFormat(dateFormatResult, new Locale("ID"));
         }
 
         try {
@@ -301,7 +341,7 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
     private void setAvailable(TextView txt) {
         // setting the drawableRight image
         txt.setText(R.string.text_tersedia_small);
-        txt.setTextColor(getResources().getColor(R.color.colorGreen));
+        txt.setTextColor(getResources().getColor(R.color.green));
         txt.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.note16, 0);
     }
 
@@ -312,32 +352,42 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
     private void addingDataRow(Schedule obj) {
 
         if (obj.getSpecific_hour().equalsIgnoreCase("08:00")) {
-            if (obj.getStatus() != 1) {
+
+            // we need to ensure this is not today and within 1 hour booked
+            // as the time limit already reached
+
+            if (obj.getStatus() != 1 && canBookingHour(8)) {
                 setAvailable(textViewKet08);
                 setBold(textViewHour08);
                 buttonBookingJam08.setVisibility(View.VISIBLE);
             }
 
         } else if (obj.getSpecific_hour().equalsIgnoreCase("10:00")) {
-            if (obj.getStatus() != 1) {
+
+            if (obj.getStatus() != 1 && canBookingHour(10)) {
                 setAvailable(textViewKet10);
                 setBold(textViewHour10);
                 buttonBookingJam10.setVisibility(View.VISIBLE);
             }
         } else if (obj.getSpecific_hour().equalsIgnoreCase("13:00")) {
-            if (obj.getStatus() != 1) {
+
+            if (obj.getStatus() != 1 && canBookingHour(13)) {
                 setAvailable(textViewKet13);
                 setBold(textViewHour13);
                 buttonBookingJam13.setVisibility(View.VISIBLE);
             }
         } else if (obj.getSpecific_hour().equalsIgnoreCase("16:00")) {
-            if (obj.getStatus() != 1) {
+
+
+            if (obj.getStatus() != 1 && canBookingHour(16)) {
                 setAvailable(textViewKet16);
                 setBold(textViewHour16);
                 buttonBookingJam16.setVisibility(View.VISIBLE);
             }
         } else if (obj.getSpecific_hour().equalsIgnoreCase("20:00")) {
-            if (obj.getStatus() != 1) {
+
+
+            if (obj.getStatus() != 1 && canBookingHour(20)) {
                 setAvailable(textViewKet20);
                 setBold(textViewHour20);
                 buttonBookingJam20.setVisibility(View.VISIBLE);
@@ -351,7 +401,7 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
             checkboxElektrik, checkboxPijatSyaraf,
             checkboxFashdu, checkboxLintah;
 
-    private void clearAllCheckboxes(boolean b){
+    private void clearAllCheckboxes(boolean b) {
 
         checkboxHijamah.setEnabled(!b);
         checkboxGurah.setEnabled(!b);
@@ -377,9 +427,9 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
 
     OrderHelper help;
 
-    public void resetTreatment(View v){
+    public void resetTreatment(View v) {
         help.resetItem();
-        if(((CheckBox) v).isChecked()) {
+        if (((CheckBox) v).isChecked()) {
             help.addItem("umum");
 
             clearAllCheckboxes(true);
@@ -396,7 +446,7 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
     Button buttonTreatmentOK;
     ScrollView scrollViewBooking;
 
-    private void renderBiaya(){
+    private void renderBiaya() {
 
         bottomView.requestFocus();
         scrollViewBooking.post(new Runnable() {
@@ -406,30 +456,44 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
             }
         });
 
-        if(help.count()>0){
+        if (help.count() > 0) {
             buttonTreatmentOK.setVisibility(View.VISIBLE);
             textViewEstimasiBiaya.setVisibility(View.VISIBLE);
             String totalText = help.getTotalPrice();
 
 
             textViewEstimasiBiaya.setText("Estimasi Biaya : " + totalText);
-        }else{
+        } else {
             buttonTreatmentOK.setVisibility(View.GONE);
             textViewEstimasiBiaya.setVisibility(View.GONE);
         }
 
     }
 
-    public void tampilkanJadwal(View v){
-      showBookingTable(true);
+    public void tampilkanJadwal(View v) {
+        showLoading(false);
+        showTreatmentOptions(false);
+        showBookingTable(true);
+
+        // showWarningRuqyah(false);
+        // once schedule are not available now we check the ruqyah mode
+        checkRuqyahMode();
+
     }
 
-    private void showBookingTable(boolean b){
-        if(b) {
-            linearTreatmentPick.setVisibility(View.GONE);
-            linearBooking.setVisibility(View.VISIBLE);
-        } else {
+    private void showTreatmentOptions(boolean b) {
+        if (b) {
             linearTreatmentPick.setVisibility(View.VISIBLE);
+        } else {
+            linearTreatmentPick.setVisibility(View.GONE);
+        }
+    }
+
+    private void showBookingTable(boolean b) {
+        if (b) {
+            linearBooking.setVisibility(View.VISIBLE);
+            checkRateApp();
+        } else {
             linearBooking.setVisibility(View.GONE);
         }
     }
@@ -440,12 +504,12 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
 
         String nama = chb.getText().toString();
 
-        if(chb.isChecked()){
+        if (chb.isChecked()) {
 
-              help.addItem(nama);
+            help.addItem(nama);
 
-        }else{
-                help.removeItem(nama);
+        } else {
+            help.removeItem(nama);
         }
 
         //ShowDialog.message(this, "terpilih " + chb.getText());
@@ -454,6 +518,7 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
     }
 
     int prof;
+
     private void updateUserProfile() {
 
         gender = UserData.getPreferenceInt(Keys.USER_GENDER);
@@ -466,15 +531,90 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
 
         prof = UserData.getPreferenceInt(Keys.USER_PROFESSION);
 
-        if(prof == Keys.PROFESI_UMUM){
+        if (prof == Keys.PROFESI_UMUM) {
             imageViewProfesi.setImageResource(R.drawable.umum_icon);
-        }else if(prof == Keys.PROFESI_PELAJAR){
+        } else if (prof == Keys.PROFESI_PELAJAR) {
             imageViewProfesi.setImageResource(R.drawable.pelajar_icon);
         }
     }
 
+    private boolean canBookingHour(int hourUsed) {
+
+        // this function only used for the selected day only
+        // if another date chosen we will not use this function
+        // because it is based on this limit Hour only
+        // thus the buttons are all restricted
+
+        SimpleDateFormat originalFormat = new SimpleDateFormat("EEEE dd-MMM-yyyy", new Locale("ID"));
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
+        SimpleDateFormat sdfJam = new SimpleDateFormat("HH:mm");
+
+        boolean isItToday, disableHour = false;
+
+        try {
+
+            Date tglTerpilih = originalFormat.parse(dateChosen);
+            Date tglHariIni = new Date();
+
+            String tglTerpilihText, tglHariIniText;
+
+            tglHariIniText = sdf.format(tglHariIni);
+            tglTerpilihText = sdf.format(tglTerpilih);
+
+            isItToday = tglHariIniText.equalsIgnoreCase(tglTerpilihText);
+
+            if (isItToday) {
+
+                // lets do the checking
+                String dataJam[] = sdfJam.format(tglHariIni).split(":");
+                // ShowDialog.message(this, "Didapat " + sdfJam.format(tglHariIni));
+                int h = Integer.parseInt(dataJam[0]);
+                int m = Integer.parseInt(dataJam[1]);
+
+                // limit allowed for 8 morning
+                // is before 8-1 : 07:00 and before
+                // etc ...
+                disableHour = canBook(hourUsed, h, m);
+                // ShowDialog.message(this, "for " + hourUsed + " you " + disableHour);
+            }else{
+                // because it is not today so
+                // let it be
+                disableHour = true;
+            }
+
+        } catch (Exception ex) {
+            ShowDialog.message(this, "Error in logic of disableHour..." + ex.getMessage());
+        }
+
+        return disableHour;
+
+    }
+
+    private boolean canBook(int hourIn, int h, int m) {
+        boolean b = true;
+
+        if (h == hourIn - 1 && m == 0) {
+            b = false;
+        } else if (h < hourIn - 1 && m > 0) {
+            b = true;
+        }
+
+        return b;
+    }
+
     @Override
     public void nextActivity() {
+
+    }
+
+    private void showWarningRuqyah(boolean b) {
+
+        if (b) {
+            blinking();
+            linearWarningRuqyah.setVisibility(View.VISIBLE);
+        } else {
+            linearWarningRuqyah.setVisibility(View.GONE);
+        }
 
     }
 
@@ -485,14 +625,34 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
             //ShowDialog.message(this, "dapt " + respond);
 
             Gson gson = new Gson();
+            JsonParser parser = new JsonParser();
 
             if (RespondHelper.isValidRespond(respond)) {
 
-                if (urlTarget.contains(URLReference.ScheduleDetail)) {
+                if (urlTarget.contains(URLReference.RuqyahCheck)) {
+
+                    JSONObject jsons = RespondHelper.getObject(respond, "multi_data");
+
+                    JsonElement mJson = parser.parse(jsons.toString());
+
+                    Ruqyah object = gson.fromJson(mJson, Ruqyah.class);
+                    String dateServerFormat = convertDateFormat(dateChosen, "yyyy-MM-dd", Keys.LANGUAGE_EN);
+
+                    if (object.getDate_chosen().equalsIgnoreCase(dateServerFormat)) {
+                        if (object.getGender_therapist() == gender && object.getStatus() == 1) {
+                            showLoading(false);
+                            showBookingTable(false);
+                            showTreatmentOptions(false);
+                            showWarningRuqyah(true);
+                        }
+                    }
+
+                  //  ShowDialog.message(this, "ruqyah ada tapi... " + object.getStatus());
+
+                } else if (urlTarget.contains(URLReference.ScheduleDetail)) {
 
                     JSONArray jsons = RespondHelper.getArray(respond, "multi_data");
 
-                    JsonParser parser = new JsonParser();
                     JsonElement mJson = parser.parse(jsons.toString());
 
                     Schedule object[] = gson.fromJson(mJson, Schedule[].class);
@@ -502,6 +662,11 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
                     }
 
                     showLoading(false);
+                    showBookingTable(false);
+                    showTreatmentOptions(true);
+                    showWarningRuqyah(false);
+
+
 
                 } else if (urlTarget.contains(URLReference.AdhanWebsite)) {
 
@@ -525,13 +690,21 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
 
             } else if (!RespondHelper.isValidRespond(respond)) {
 
-                String pesan = "Maaf sekali, tidak ada jadwal yg kosong!";
-                ShowDialog.message(this, pesan);
+                if (urlTarget.contains(URLReference.ScheduleDetail)) {
+                    String pesan = "Maaf sekali, tidak ada jadwal yg kosong!";
+                    ShowDialog.message(this, pesan);
 
-                showLoading(false);
-                textViewPetunjuk.setText(pesan);
+                    showLoading(false);
+                    showBookingTable(true);
+                    showTreatmentOptions(false);
+                    showWarningRuqyah(false);
 
-                showBookingTable(true);
+                    textViewPetunjuk.setText(pesan);
+
+
+
+                }
+
 
             }
         } catch (Exception ex) {
@@ -542,16 +715,40 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
     }
 
     public String getAlbumStorageDir() {
-        String path = Environment.getExternalStorageDirectory()
-                + "/Android/data/" + getApplicationContext().getPackageName();
 
         // creating file folder first
-        File file = new File(path);
-        if(!file.exists()) {
+        File file = getFilesDir();
+        if (!file.exists()) {
             file.mkdirs();
         }
 
-        return path;
+        return file.getAbsolutePath();
+    }
+
+    private File exportFile(File src, File dst) throws Exception {
+
+        //if folder does not exist
+        if (!dst.exists()) {
+            if (!dst.mkdirs()) {
+                return null;
+            }
+        }
+
+        //String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        File expFile = new File(dst.getPath() + File.separator + src.getName());
+        FileChannel inChannel = null;
+        FileChannel outChannel = null;
+
+
+        inChannel = new FileInputStream(src).getChannel();
+        outChannel = new FileOutputStream(expFile).getChannel();
+        inChannel.transferTo(0, inChannel.size(), outChannel);
+        if (inChannel != null)
+            inChannel.close();
+        if (outChannel != null)
+            outChannel.close();
+
+        return expFile;
     }
 
     public void shareTo(View view) {
@@ -576,14 +773,33 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
             fos.flush();
             fos.close();
 
-            Uri uri = Uri.fromFile(file);
+            // we make a copy in the SD Card
+            String temp = Environment.getExternalStorageDirectory() + "/Android/data/" + getApplicationContext().getPackageName();
+            File fileTemp = new File(temp);
 
+            if (!fileTemp.exists()) {
+                fileTemp.mkdirs();
+            }
+
+            // we create a new one
+
+            fileTemp = new File(temp + File.separator + file.getName());
+            File fileFinal = exportFile(file, fileTemp);
+
+            Uri uri = Uri.fromFile(fileFinal);
 
             // share to another app
             Intent intent = new Intent(android.content.Intent.ACTION_SEND);
             intent.putExtra(Intent.EXTRA_STREAM, uri);
             intent.putExtra(Intent.EXTRA_SUBJECT, "Share Booking Jadwal Therapy");
-            intent.putExtra(Intent.EXTRA_TEXT, "Ayo kita *booking jadwal therapy* di RTH...");
+
+            // check jika sedang ruqyah kalimatnya bedain
+            if (linearWarningRuqyah.getVisibility() == View.VISIBLE) {
+                intent.putExtra(Intent.EXTRA_TEXT, "Saat ini *booking jadwal therapy* di RTH sedang Ruqyah...");
+            } else {
+                intent.putExtra(Intent.EXTRA_TEXT, "Ayo kita *booking jadwal therapy* di RTH...");
+            }
+
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             intent.setType("image/png");
             startActivity(intent);
@@ -604,15 +820,15 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
 
     }
 
-    public String getTreatment(){
-        StringBuffer mes  = new StringBuffer();
+    public String getTreatment() {
+        StringBuffer mes = new StringBuffer();
 
         int i = 1;
         mes.append("Saya perlu *treatment :* ");
 
-        if(help.count()>0) {
+        if (help.count() > 0) {
             for (String item : help.getItems()) {
-                mes.append("\n" + i + "." + item );
+                mes.append("\n" + i + "." + item);
                 i++;
             }
 
@@ -694,12 +910,83 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
 
     }
 
-    public void openChatJam08(View v) {
+    private void checkRateApp() {
 
-        visitLinkOrWhatsapp(buttonBookingJam08, textViewKet08, "08:00");
+        boolean pernahRate = UserData.getPreferenceBoolean(Keys.RATE_APP_PREVIOUS);
 
-        //ShowDialog.message(this, "Error saat jam 08!");
+        if (!pernahRate) {
+            showDialogRate();
+        }
+
     }
+
+    Dialog dialog;
+
+    private void showDialogRate() {
+        dialog = new Dialog(this);
+        dialog.setContentView(R.layout.dialog_rate);
+
+        Button btnCancel = dialog.findViewById(R.id.dialog_cancel);
+        Button btnOk = dialog.findViewById(R.id.dialog_ok);
+
+        btnOk.setText("Save");
+
+        btnOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // save dulu status nya TRUE
+                UserData.savePreference(Keys.RATE_APP_PREVIOUS, true);
+
+                rateApp();
+                dialog.dismiss();
+            }
+        });
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.setTitle("Rate App ini");
+        dialog.show();
+    }
+
+
+    private void blinking() {
+
+        imageViewRuqyah.startAnimation(animBounce);
+
+
+    }
+
+    // this is for rate app
+
+    public void rateApp() {
+        try {
+            Intent rateIntent = rateIntentForUrl("market://details");
+            startActivity(rateIntent);
+        } catch (Exception e) {
+            Intent rateIntent = rateIntentForUrl("https://play.google.com/store/apps/details");
+            startActivity(rateIntent);
+        }
+    }
+
+
+    private Intent rateIntentForUrl(String url) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(String.format("%s?id=%s", url, getPackageName())));
+        int flags = Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_ACTIVITY_MULTIPLE_TASK;
+        if (Build.VERSION.SDK_INT >= 21) {
+            flags |= Intent.FLAG_ACTIVITY_NEW_DOCUMENT;
+        } else {
+            //noinspection deprecation
+            flags |= Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET;
+        }
+        intent.addFlags(flags);
+        return intent;
+    }
+
 
     public void visitLinkOrWhatsapp(Button btn, TextView txt, String hourSelected) {
         if (btn.getTag().toString().equalsIgnoreCase("link")) {
@@ -714,7 +1001,6 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
             } else {
                 ShowDialog.message(this, "Maaf jam " + hourSelected + " tidak tersedia!");
             }
-
 
         }
 
@@ -735,6 +1021,13 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
         n.setPackage("com.android.chrome");
         startActivity(n);
 
+    }
+
+    public void openChatJam08(View v) {
+
+        visitLinkOrWhatsapp(buttonBookingJam08, textViewKet08, "08:00");
+
+        //ShowDialog.message(this, "Error saat jam 08!");
     }
 
     public void openChatJam10(View v) {

@@ -1,5 +1,5 @@
 git add .
-git commit -m "updated calendar for admin with clickable focus current date."
+git commit -m "new legend for Ruqyah session in calendar."
 git push origin main
 git gc --prune
 pause

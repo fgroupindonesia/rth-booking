@@ -15,6 +15,7 @@
         android:roundIcon="@mipmap/icon_rth_booking"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
+        android:requestLegacyExternalStorage="true"
         android:usesCleartextTraffic="true">
         <activity android:name="booking1.rth.web.id.DateSpecificActivity" />
         <activity android:name="booking1.rth.web.id.UserProfileActivity" />
