@@ -552,7 +552,7 @@
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:orientation="vertical"
-                tools:visibility="gone">
+                android:visibility="gone">
 
                 <ImageView
                     android:id="@+id/imageViewRuqyah"

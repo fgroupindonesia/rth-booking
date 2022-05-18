@@ -5,7 +5,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -19,6 +23,7 @@ import com.google.gson.JsonParser;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -51,6 +56,7 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
     TableRow tableRow1, tableRow2, tableRow3, tableRow4, tableRow5;
     ImageView imageViewUserProfile, imageViewPreviousMonth, imageViewNextMonth;
     int currentMonth = 0, gender;
+    TextView textViewCalendarTitleCommand;
 
     EditText editTextOverallData;
     @Override
@@ -63,12 +69,15 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
 
         currentMonth = UserData.getPreferenceInt(Keys.CALENDAR_OPENED);
 
+        textViewCalendarTitleCommand = (TextView) findViewById(R.id.textViewCalendarTitleCommand);
+
         textViewTglMasehi = (TextView) findViewById(R.id.textViewTglMasehi);
         textViewTglHijriyyah = (TextView) findViewById(R.id.textViewTglHijriyyah);
 
         editTextOverallData = (EditText) findViewById(R.id.editTextOverallData);
 
        // textViewOverallData = (TextView) findViewById(R.id.textViewOverallData);
+        changeTextAfter3Seconds();
 
         tableRow1 = (TableRow) findViewById(R.id.tableRow1);
         tableRow2 = (TableRow) findViewById(R.id.tableRow2);
@@ -166,6 +175,8 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
 
     }
 
+    // stored for MMMM yyyy format date
+    String mYear;
     private void obtainingAllData(String bulanTahunIndo, String bulanTahunEnglish) {
         WebRequest httpCall = new WebRequest(CalendarActivity.this, CalendarActivity.this);
 
@@ -176,7 +187,7 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
         // String mYear = sdf.format(new Date());
         // String mYearIndo = sdfIndo.format(new Date());
 
-        String mYear = bulanTahunEnglish;
+        mYear = bulanTahunEnglish;
         String mYearIndo = bulanTahunIndo;
 
         textViewNamaBulan.setText(mYearIndo);
@@ -193,6 +204,12 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
         httpCall.execute();
 
         // ShowDialog.message(this, "Anda posting timing " + mYear);
+
+
+
+    }
+
+    private void obtainAllDataRuqyah( ){
 
         // another data call for ruqyah data
         WebRequest httpCallR = new WebRequest(CalendarActivity.this, CalendarActivity.this);
@@ -317,6 +334,29 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
                 }
             });
 
+            dummy.setOnLongClickListener(new View.OnLongClickListener() {
+
+                @Override
+                public boolean onLongClick(View v) {
+
+                   // opening as client for preview
+                    // obtaining the date using
+                    // EEEE dd-MMM-yyyy format passed
+                    // but split it under the tag
+                    // FIRST-POST [0] is coloring scheme
+                    // SECOND-POST [1] is the date located,
+                    // but it still using yyyy-MM-dd format
+
+                    String dateNa = v.getTag().toString().split(";")[1];
+
+                    String dateWantedFormat = convertDateFormat(dateNa, "EEEE dd-MMM-yyyy", Keys.LANGUAGE_ID);
+
+                    previewDateAsClient(dateWantedFormat);
+
+                    return true;
+                }
+            });
+
             // when it reached the last x-order indexes
             if (i < lastDayIndex) {
                 i++;
@@ -327,6 +367,30 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
 
             number++;
         }
+    }
+
+    private String convertDateFormat(String in, String dateFormatResult, int languageResult) {
+
+        String res = null;
+
+        SimpleDateFormat originalFormat = new SimpleDateFormat("yyyy-MM-dd");
+        DateFormat targetFormat = null;
+
+        if (languageResult == Keys.LANGUAGE_EN) {
+            targetFormat = new SimpleDateFormat(dateFormatResult);
+        } else {
+            targetFormat = new SimpleDateFormat(dateFormatResult, new Locale("ID"));
+        }
+
+        try {
+            Date date = originalFormat.parse(in);
+            res = targetFormat.format(date);
+        } catch (Exception ex) {
+
+        }
+
+        return res;
+
     }
 
     private boolean isEqual(String n, String m) {
@@ -451,6 +515,64 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
         startActivity(i);
 
         finish();
+
+    }
+
+    @Override
+    public void onDestroy(){
+        handler.removeCallbacksAndMessages(null);
+        super.onDestroy();
+    }
+
+    final int TIME_TEXT_CHANGED = 3000;
+    final Handler handler = new Handler(Looper.getMainLooper());
+
+    private void changeTextAfter3Seconds(){
+
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                //Do something after 100ms
+                if(textViewCalendarTitleCommand.getTag()!=null){
+                    textViewCalendarTitleCommand.setText("Long Press di satu tanggal (Preview)");
+                    textViewCalendarTitleCommand.setTag(null);
+                    blinkingTitle(true);
+                }else {
+                    textViewCalendarTitleCommand.setTag(Keys.INFO_TEXT_PILIH_TANGGAL);
+                    textViewCalendarTitleCommand.setText("Pilih tanggal yg akan di-set");
+                    blinkingTitle(false);
+                }
+
+                changeTextAfter3Seconds();
+            }
+        }, TIME_TEXT_CHANGED);
+    }
+
+    private void blinkingTitle(boolean b){
+        if(b) {
+            Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.blinking);
+            textViewCalendarTitleCommand.startAnimation(animation);
+        }else{
+            textViewCalendarTitleCommand.clearAnimation();
+        }
+    }
+
+    public void previewDateAsClient(String dateText) {
+        // dateText is using special format such as :
+        // EEEE dd-MMM-yyyy
+
+        Intent i = new Intent(this, BookingScheduleActivity.class);
+
+        // stored data access type for differentiating one to another access
+        UserData.savePreference(Keys.USER_USAGE, Keys.ACCESS_MANAGEMENT);
+
+        // and here we put the date stored for data passing used in the next activity
+        // in an Indonesian format
+        i.putExtra(Keys.DATE_CHOSEN, dateText);
+
+       // ShowDialog.message(this, "we send " + dateText);
+
+        startActivity(i);
 
     }
 
@@ -631,7 +753,6 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
 
                     JSONArray jsons = RespondHelper.getArray(respond, "multi_data");
 
-
                     JsonElement mJson = parser.parse(jsons.toString());
 
                     Schedule object[] = gson.fromJson(mJson, Schedule[].class);
@@ -665,10 +786,12 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
                         schedOver.makeSingleDay(single);
                     }
 
-                    // ShowDialog.message(this, "total is " + object.length);
-
+                    // ShowDialog.message(this, "total schedule is" + object.length);
 
                     editTextOverallData.setText(schedOver.getCompleteText());
+
+                    // call another Web API
+                    obtainAllDataRuqyah();
 
                 } else if (urlTarget.contains(URLReference.AdhanWebsite)) {
 
@@ -725,7 +848,7 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
 
             } else if (!RespondHelper.isValidRespond(respond)) {
 
-                //ShowDialog.message(this, "tidak ada data dari Server!");
+                //ShowDialog.message(this, "tidak ada data dari Server!\n"+respond);
                 //finish();
 
             }

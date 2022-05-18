@@ -16,8 +16,8 @@
     <string name="text_tutorial_step_3">3.Klik Jam yg diinginkan</string>
     <string name="text_tutorial_step_4">4.Isi format whatsapp dengan benar</string>
     <string name="text_tutorial_step_5">5.Kirim &amp; tunggu Konfirmasi</string>
-    <string name="text_profil_ikhwan">Ikhwan</string>
-    <string name="text_profil_akhwat">Akhwat</string>
+    <string name="text_profil_ikhwan">Therapy\nIkhwan</string>
+    <string name="text_profil_akhwat">Therapy\nAkhwat</string>
     <string name="text_profil_workshop">Workshop</string>
     <string name="text_profesi_umum">Umum</string>
     <string name="text_profesi_pelajar">Pelajar</string>

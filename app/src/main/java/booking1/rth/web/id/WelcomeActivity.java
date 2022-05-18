@@ -134,7 +134,7 @@ public class WelcomeActivity extends AppCompatActivity {
     private void gotoAnotherActivity(){
 
         if(workAsClient) {
-            user_usage = Keys.CLIENT;
+            user_usage = Keys.ACCESS_CLIENT;
             UserData.savePreference(Keys.USER_USAGE, user_usage);
 
 
@@ -144,7 +144,7 @@ public class WelcomeActivity extends AppCompatActivity {
 
         }else{
             // now we move on as management people
-            user_usage = Keys.MANAGEMENT;
+            user_usage = Keys.ACCESS_MANAGEMENT;
             UserData.savePreference(Keys.USER_USAGE, user_usage);
 
             gotoLoginActivity();
@@ -152,6 +152,13 @@ public class WelcomeActivity extends AppCompatActivity {
         }
 
         finish();
+    }
+
+    private void downloadNewPosterAds(){
+
+        // we grab the data from the server
+        
+
     }
 
     public void gotoLoginActivity(){

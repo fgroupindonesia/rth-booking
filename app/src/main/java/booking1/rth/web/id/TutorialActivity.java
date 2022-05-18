@@ -57,7 +57,7 @@ public class TutorialActivity extends AppCompatActivity {
 
     private void showLayoutAsUsage(){
 
-        if(user_usage == Keys.MANAGEMENT){
+        if(user_usage == Keys.ACCESS_MANAGEMENT){
             linearTutorialManajemen.setVisibility(View.VISIBLE);
             linearTutorialPasien.setVisibility(View.GONE);
         }else{
@@ -75,10 +75,10 @@ public class TutorialActivity extends AppCompatActivity {
 
         if(haveNetworkConnection()){
             Intent intent = null;
-           if(user_usage == Keys.CLIENT && isTextEquals(buttonOKClient, "ok")){
+           if(user_usage == Keys.ACCESS_CLIENT && isTextEquals(buttonOKClient, "ok")){
                  intent = new Intent(this, ClientProfileActivity.class);
 
-           } else  if(user_usage == Keys.MANAGEMENT && isTextEquals(buttonOKManajemen, "ok")){
+           } else  if(user_usage == Keys.ACCESS_MANAGEMENT && isTextEquals(buttonOKManajemen, "ok")){
                intent = new Intent(this, CalendarActivity.class);
            }
 

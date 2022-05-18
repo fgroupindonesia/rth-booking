@@ -888,7 +888,7 @@ public class DateSpecificActivity extends AppCompatActivity implements Navigator
 
             } else if (!RespondHelper.isValidRespond(respond)) {
 
-                ShowDialog.message(this, "tidak ada data dari Server!");
+               // ShowDialog.message(this, "tidak ada data dari Server!");
                 //finish();
 
             }

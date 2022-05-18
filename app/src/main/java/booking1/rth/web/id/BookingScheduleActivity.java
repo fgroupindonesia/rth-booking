@@ -35,7 +35,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.channels.FileChannel;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Random;
@@ -93,6 +95,10 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
     int hourBeforeBooked = 1;
     Animation animBounce;
 
+    // for differentiating is this patient client
+    // or is this management user?
+    int userUsage;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,15 +107,8 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
         // for storing later usage
         UserData.setPreference(this);
 
-        usName = UserData.getPreferenceString(Keys.USERNAME);
-        wa = UserData.getPreferenceString(Keys.WHATSAPP);
-        profesi = UserData.getPreferenceInt(Keys.USER_PROFESSION);
-
-        // to know the payment details later
-        help = new OrderHelper(profesi);
-        //ShowDialog.message(this, "profesinya " + profesi);
-
-        waSender = new WhatsappSender(this);
+        // check the usage
+        userUsage  =  UserData.getPreferenceInt(Keys.USER_USAGE);
 
         // this part is only helper for scrolling down
         scrollViewBooking = (ScrollView) findViewById(R.id.scrollViewBooking);
@@ -173,6 +172,36 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
         // using dateChosen as well
         getIslamicDate();
 
+        // either student or umum?
+        profesi = UserData.getPreferenceInt(Keys.USER_PROFESSION);
+
+        // to know the payment details later
+        help = new OrderHelper(profesi);
+
+       if(userUsage == Keys.ACCESS_MANAGEMENT){
+           // as management previewing the date as a client simulation
+
+               // directly show the timetable (jadwal)
+               // and choose the treatment on website form
+           showTreatmentOptions(false);
+           showBookingTable(true);
+
+
+          // ShowDialog.message(this, "anda ialah management");
+
+       }else{
+           // as client normally
+
+         //  ShowDialog.message(this, "anda ialah patient");
+
+
+           usName = UserData.getPreferenceString(Keys.USERNAME);
+        wa = UserData.getPreferenceString(Keys.WHATSAPP);
+
+        //ShowDialog.message(this, "profesinya " + profesi);
+
+        waSender = new WhatsappSender(this);
+
         if (UserData.getPreferenceBoolean(Keys.USER_REGISTER_STATUS)) {
             // if true then this is registered user
 
@@ -196,13 +225,16 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
         if (!UserData.getPreferenceBoolean(Keys.USER_REGISTER_STATUS)) {
             // directly show the timetable (jadwal)
             // and choose the treatment on website form
-            showBookingTable(true);
             showTreatmentOptions(false);
+            showBookingTable(true);
+
 
         }
 
         // for animated ruqyah purposes only
         animBounce = AnimationUtils.loadAnimation(this, R.anim.blinking);
+
+       }
 
 
     }
@@ -266,7 +298,7 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
         httpCall.setTargetURL(URLReference.RuqyahCheck);
         httpCall.execute();
 
-   //     ShowDialog.message(this, "Ruqyah is checked! " + dateAmrik);
+        //     ShowDialog.message(this, "Ruqyah is checked! " + dateAmrik);
     }
 
     private void centerTitleApp() {
@@ -461,7 +493,6 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
             textViewEstimasiBiaya.setVisibility(View.VISIBLE);
             String totalText = help.getTotalPrice();
 
-
             textViewEstimasiBiaya.setText("Estimasi Biaya : " + totalText);
         } else {
             buttonTreatmentOK.setVisibility(View.GONE);
@@ -576,7 +607,7 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
                 // etc ...
                 disableHour = canBook(hourUsed, h, m);
                 // ShowDialog.message(this, "for " + hourUsed + " you " + disableHour);
-            }else{
+            } else {
                 // because it is not today so
                 // let it be
                 disableHour = true;
@@ -641,13 +672,14 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
                     if (object.getDate_chosen().equalsIgnoreCase(dateServerFormat)) {
                         if (object.getGender_therapist() == gender && object.getStatus() == 1) {
                             showLoading(false);
-                            showBookingTable(false);
-                            showTreatmentOptions(false);
+                            //showBookingTable(false);
+                            //showTreatmentOptions(false);
                             showWarningRuqyah(true);
+                            ShowDialog.message(this, "ini hari ruqyah lho!");
                         }
                     }
 
-                  //  ShowDialog.message(this, "ruqyah ada tapi... " + object.getStatus());
+                    //  ShowDialog.message(this, "ruqyah ada tapi... " + object.getStatus());
 
                 } else if (urlTarget.contains(URLReference.ScheduleDetail)) {
 
@@ -662,10 +694,9 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
                     }
 
                     showLoading(false);
-                    showBookingTable(false);
-                    showTreatmentOptions(true);
-                    showWarningRuqyah(false);
-
+                    //showBookingTable(false);
+                    //showTreatmentOptions(true);
+                    //showWarningRuqyah(false);
 
 
                 } else if (urlTarget.contains(URLReference.AdhanWebsite)) {
@@ -700,7 +731,6 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
                     showWarningRuqyah(false);
 
                     textViewPetunjuk.setText(pesan);
-
 
 
                 }
@@ -910,11 +940,51 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
 
     }
 
+    private int getDifferenceDays(Date d1, Date d2) {
+        int daysdiff = 0;
+        long diff = d2.getTime() - d1.getTime();
+        long diffDays = diff / (24 * 60 * 60 * 1000) + 1;
+        daysdiff = (int) diffDays;
+        return daysdiff;
+    }
+
     private void checkRateApp() {
+
+        String dateInstalled = UserData.getPreferenceString(Keys.DATE_INSTALLED);
+        int dayPassed = 0;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date today = new Date();
+        String todayDate = sdf.format(today);
+
+        if (dateInstalled != null) {
+            // get day passed
+            dayPassed = UserData.getPreferenceInt(Keys.DAY_PASSED);
+
+            // check first is the date is now or difference?
+            if (!todayDate.equalsIgnoreCase(dateInstalled)) {
+                // lets calculate the day difference
+                try {
+                    Date dateGiven = sdf.parse(dateInstalled);
+                    dayPassed = getDifferenceDays(today, dateGiven);
+                    dayPassed = Math.abs(dayPassed);
+                } catch (Exception e) {
+
+                }
+
+
+            }
+
+        }
+
+        UserData.savePreference(Keys.DATE_INSTALLED, todayDate);
+        UserData.savePreference(Keys.DAY_PASSED, dayPassed);
+
+        //ShowDialog.message(this, "date terekam " + todayDate + " dengan daypassed " + dayPassed);
 
         boolean pernahRate = UserData.getPreferenceBoolean(Keys.RATE_APP_PREVIOUS);
 
-        if (!pernahRate) {
+        // sudah lewat 3 hari pakai tapi blm pernah nge-rate?
+        if (!pernahRate && dayPassed >= 3) {
             showDialogRate();
         }
 
@@ -989,17 +1059,24 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
 
 
     public void visitLinkOrWhatsapp(Button btn, TextView txt, String hourSelected) {
-        if (btn.getTag().toString().equalsIgnoreCase("link")) {
+        if(btn.getTag()==null) {
+            // admin should not click pilih whatsapp button on this simulation
+            ShowDialog.message(this, "Ini hanya Preview!");
+        } else if (btn.getTag().toString().equalsIgnoreCase("link")) {
             // buka ke pendaftaran
             openLink(hourSelected);
             ShowDialog.message(this, "Silahkan isi form dengan lengkap!");
         } else {
 
             // buka whatsapp
-            if (isAvailable(txt)) {
-                waSender.sendMessageToWhatsAppContact(NO_RTH, createText(hourSelected));
-            } else {
-                ShowDialog.message(this, "Maaf jam " + hourSelected + " tidak tersedia!");
+            if(userUsage != Keys.ACCESS_MANAGEMENT) {
+                if (isAvailable(txt)) {
+                    waSender.sendMessageToWhatsAppContact(NO_RTH, createText(hourSelected));
+                } else {
+                    ShowDialog.message(this, "Maaf jam " + hourSelected + " tidak tersedia!");
+                }
+            }else{
+                ShowDialog.message(this, "Ini hanya Preview!");
             }
 
         }

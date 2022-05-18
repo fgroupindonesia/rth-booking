@@ -11,10 +11,12 @@ public class Keys {
             USER_USAGE = "USER_USAGE",
             USER_FORM_STATUS_COMPLETED = "USER_FORM_STATUS_COMPLETED",
             USER_PROFESSION = "USER_PROFESSION", CALENDAR_OPENED = "CALENDAR_OPENED",
-            RATE_APP_PREVIOUS = "RATE_APP_PREVIOUS";
+            RATE_APP_PREVIOUS = "RATE_APP_PREVIOUS", DAY_PASSED = "DAY_PASSED",
+            DATE_INSTALLED = "DATE_INSTALLED",
+            INFO_TEXT_PILIH_TANGGAL = "INFO_TEXT_PILIH_TANGGAL";
 
     public static final int MODE_IKHWAN = 1, MODE_AKHWAT = 0;
-    public static final int MANAGEMENT = 1, CLIENT = 2;
+    public static final int ACCESS_MANAGEMENT = 1, ACCESS_CLIENT = 2;
     public static final int TOGGLE_OFF = 0, TOGGLE_ON = 1;
 
     public static final int LANGUAGE_ID = 1, LANGUAGE_EN = 2;
