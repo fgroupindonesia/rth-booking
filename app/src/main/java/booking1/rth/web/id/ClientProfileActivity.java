@@ -20,7 +20,8 @@ import shared.UserData;
 public class ClientProfileActivity extends AppCompatActivity {
 
     LinearLayout linearAkhwat, linearIkhwan, linearLayoutDetectRegister,
-            linearLayoutDataForm, linearLayoutProfile, linearLayoutProfesi;
+            linearLayoutDataForm, linearLayoutProfile, linearLayoutProfesi,
+            linearModeSingle, linearModeMulti, linearLayoutBookingMode;
 
     TextView textviewTitle;
     int gender;
@@ -41,6 +42,10 @@ public class ClientProfileActivity extends AppCompatActivity {
         gender = UserData.getPreferenceInt(Keys.USER_GENDER);
 
         textviewTitle = (TextView) findViewById(R.id.textviewTitle);
+
+        linearModeSingle = (LinearLayout) findViewById(R.id.linearModeSingle);
+        linearModeMulti = (LinearLayout) findViewById(R.id.linearModeMulti);
+        linearLayoutBookingMode = (LinearLayout) findViewById(R.id.linearLayoutBookingMode);
 
         linearAkhwat = (LinearLayout) findViewById(R.id.linearAkhwat);
         linearIkhwan = (LinearLayout) findViewById(R.id.linearIkhwan);
@@ -69,7 +74,9 @@ public class ClientProfileActivity extends AppCompatActivity {
             if (UserData.getPreferenceInt(Keys.USER_PROFESSION) == Keys.PROFESI_EMPTY) {
                 showLayout(Keys.LAYOUT_CHOOSE_PROFESSION);
             }else {
-                showLayout(Keys.LAYOUT_CHOOSE_PROFILE);
+                // because the user has filled everything so
+                // we proceed to pick either Single or Multi order booking?
+                showLayout(Keys.LAYOUT_CHOOSE_BOOKING_MODE);
             }
         }
 
@@ -83,6 +90,23 @@ public class ClientProfileActivity extends AppCompatActivity {
         // this is precaution
         // if the user didnt fill any data
         setEditTextListeners();
+    }
+
+    public void openNextActivity(View v){
+
+        // this is single order
+        Intent i = new Intent(this, BookingScheduleActivity.class);
+        startActivity(i);
+
+    }
+
+    public void openFamilyMember(View v){
+
+        // this would be a multi order
+        // but let see the name list first
+        Intent i = new Intent(this, MemberActivity.class);
+        startActivity(i);
+
     }
 
     public void openWebWorkshopForm(View v){
@@ -126,6 +150,7 @@ public class ClientProfileActivity extends AppCompatActivity {
             linearLayoutProfile.setVisibility(View.VISIBLE);
             linearLayoutDataForm.setVisibility(View.GONE);
             linearLayoutProfesi.setVisibility(View.GONE);
+            linearLayoutBookingMode.setVisibility(View.GONE);
 
             textviewTitle.setText(R.string.text_booking_untuk);
 
@@ -134,6 +159,7 @@ public class ClientProfileActivity extends AppCompatActivity {
             linearLayoutProfile.setVisibility(View.GONE);
             linearLayoutDataForm.setVisibility(View.VISIBLE);
             linearLayoutProfesi.setVisibility(View.GONE);
+            linearLayoutBookingMode.setVisibility(View.GONE);
 
             textviewTitle.setText(R.string.text_data_lengkap);
 
@@ -142,14 +168,26 @@ public class ClientProfileActivity extends AppCompatActivity {
             linearLayoutProfile.setVisibility(View.GONE);
             linearLayoutDataForm.setVisibility(View.GONE);
             linearLayoutProfesi.setVisibility(View.GONE);
+            linearLayoutBookingMode.setVisibility(View.GONE);
 
             textviewTitle.setText(R.string.text_profil_anda);
         } else if (jenisLayout == Keys.LAYOUT_CHOOSE_PROFESSION) {
             linearLayoutDetectRegister.setVisibility(View.GONE);
             linearLayoutProfile.setVisibility(View.GONE);
             linearLayoutDataForm.setVisibility(View.GONE);
+            linearLayoutBookingMode.setVisibility(View.GONE);
+
             linearLayoutProfesi.setVisibility(View.VISIBLE);
             textviewTitle.setText(R.string.text_profil_anda);
+
+        } else if (jenisLayout == Keys.LAYOUT_CHOOSE_BOOKING_MODE) {
+            linearLayoutDetectRegister.setVisibility(View.GONE);
+            linearLayoutProfile.setVisibility(View.GONE);
+            linearLayoutDataForm.setVisibility(View.GONE);
+            linearLayoutProfesi.setVisibility(View.GONE);
+
+            linearLayoutBookingMode.setVisibility(View.VISIBLE);
+            textviewTitle.setText(R.string.text_label_pilih_booking);
 
         }
     }
@@ -220,9 +258,11 @@ public class ClientProfileActivity extends AppCompatActivity {
         // gender is already defined either from button (linearLayout) clicked
         // or from the local data stored
 
+        // WE try book using single mode
         Intent i = new Intent(this, PickDateActivity.class);
-        startActivity(i);
+        i.putExtra(Keys.BOOKING_MODE, Keys.MODE_BOOKING_SINGLE_ORDER);
 
+        startActivity(i);
 
     }
 

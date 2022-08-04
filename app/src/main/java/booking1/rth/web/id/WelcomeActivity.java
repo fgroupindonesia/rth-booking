@@ -40,7 +40,7 @@ public class WelcomeActivity extends AppCompatActivity {
         UserData.setPreference(this);
 
         MediaPlayer mPlayer2 = MediaPlayer.create(this, R.raw.audio_selamat_datang);
-        mPlayer2.start();
+       // mPlayer2.start();
 
         imageViewLogoRTH = (ImageView) findViewById(R.id.imageViewLogoRTH);
 

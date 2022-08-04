@@ -29,8 +29,11 @@
     <string name="text_tanggal_jadwal">Pilih Tanggal Jadwal:</string>
     <string name="text_bulan_tahun_big">Februari 2022</string>
     <string name="text_button_check">Check</string>
+    <string name="text_button_batal">Batal</string>
     <string name="text_button_ok">OK</string>
     <string name="text_button_login">Login</string>
+    <string name="text_button_booking_bersama">Booking Saya &amp; Mereka</string>
+    <string name="text_button_booking_mereka">Booking Mereka Saja</string>
     <string name="text_tanggal_big">03 Februari 2022</string>
     <string name="text_nama_bulan_big">Februari 2022</string>
     <string name="text_jam_small">Jam</string>
@@ -86,6 +89,7 @@
     <string name="text_legend_semua_ready">Semua Jadwal Siap Dipakai</string>
     <string name="text_isian_keterangan">Isian keterangan</string>
     <string name="text_label_profil_nama">Nama : </string>
+    <string name="text_label_profil_hubungan">Hubungan : </string>
     <string name="text_label_profil_nama_hint">Tulis nama lengkap </string>
     <string name="text_label_profil_kelamin">Kelamin : </string>
     <string name="text_label_profil_alamat">Alamat : </string>
@@ -99,6 +103,14 @@
     <string name="text_label_profil_password">Password : </string>
     <string name="text_label_profil_member">Membership : </string>
     <string name="text_label_empty"> </string>
+    <string name="text_label_family_member">Family Member</string>
+    <string name="text_label_atur_daftarnama">Atur daftar nama disini</string>
+    <string name="text_label_member_baru">Member Baru</string>
+    <string name="text_label_booking_1">Booking 1</string>
+    <string name="text_label_belum_ada_family">Belum ada family member</string>
+    <string name="text_label_multi_booking">Multi Booking</string>
+    <string name="text_label_pilih_booking">Pilih Mode Booking</string>
+
 
     <string-array name="membership_user">
         <item>patient</item>
@@ -109,6 +121,20 @@
         <item>wanita</item>
         <item>pria</item>
     </string-array>
+
+    <string-array name="hubungan_member">
+        <item>ibu</item>
+        <item>ayah</item>
+        <item>anak</item>
+        <item>saudara kandung</item>
+        <item>saudara jauh</item>
+        <item>keponakan</item>
+        <item>paman</item>
+        <item>bibi</item>
+        <item>keluarga angkat</item>
+        <item>kerabat</item>
+    </string-array>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 

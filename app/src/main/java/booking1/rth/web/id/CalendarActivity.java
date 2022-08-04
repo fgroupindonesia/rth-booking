@@ -53,9 +53,11 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
 
     TextView textViewNamaBulan, textViewTglMasehi,
             textViewOverallData, textViewTglHijriyyah;
-    TableRow tableRow1, tableRow2, tableRow3, tableRow4, tableRow5;
+    TableRow tableRow1, tableRow2, tableRow3, tableRow4, tableRow5, tableRow6;
     ImageView imageViewUserProfile, imageViewPreviousMonth, imageViewNextMonth;
     int currentMonth = 0, gender;
+    int totalBox = 42;
+
     TextView textViewCalendarTitleCommand;
 
     EditText editTextOverallData;
@@ -84,6 +86,7 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
         tableRow3 = (TableRow) findViewById(R.id.tableRow3);
         tableRow4 = (TableRow) findViewById(R.id.tableRow4);
         tableRow5 = (TableRow) findViewById(R.id.tableRow5);
+        tableRow6 = (TableRow) findViewById(R.id.tableRow6);
 
         imageViewPreviousMonth = (ImageView) findViewById(R.id.imageViewPreviousMonth);
         imageViewNextMonth = (ImageView) findViewById(R.id.imageViewNextMonth);
@@ -312,6 +315,8 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
                 v = tableRow4.getChildAt(i);
             } else if (rowCount == 5) {
                 v = tableRow5.getChildAt(i);
+            } else if (rowCount == 6) {
+                v = tableRow6.getChildAt(i);
             }
             //do something with your child element
             dummy = (TextView) v;
@@ -399,7 +404,7 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
 
     private void clearingAllMarkers() {
 
-        int totalBox = 35;
+
         int currentBox = 1;
         int rowCount = 1;
         int i = 0;
@@ -422,6 +427,8 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
                 v = tableRow4.getChildAt(i);
             } else if (rowCount == 5) {
                 v = tableRow5.getChildAt(i);
+            } else if (rowCount == 6) {
+                v = tableRow6.getChildAt(i);
             }
             //do something with your child element
             dummy = (TextView) v;
@@ -578,11 +585,9 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
 
     private void recoloringDataRow(Ruqyah objectIn){
         // now applying into the calendar UI
-        int totalBox = 35;
         int currentBox = 1;
         int rowCount = 1;
         int i = 0;
-        int limitIndex = 6;
 
         View v = null;
         TextView dummy = null;
@@ -603,6 +608,8 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
                 v = tableRow4.getChildAt(i);
             } else if (rowCount == 5) {
                 v = tableRow5.getChildAt(i);
+            } else if (rowCount == 6) {
+                v = tableRow6.getChildAt(i);
             }
             //do something with your child element
             dummy = (TextView) v;
@@ -647,13 +654,13 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
 
         schedOver.populate(objectIn);
 
-        //ShowDialog.message(this, "Adding into row... " + objectIn.getDate_chosen());
+        // ShowDialog.message(this, "Adding into row... " + objectIn.getDate_chosen());
 
         // adding to the machine counter
         scheduleMachine.addSchedule(objectIn);
 
         // now applying into the calendar UI
-        int totalBox = 35;
+
         int currentBox = 1;
         int rowCount = 1;
         int i = 0;
@@ -678,6 +685,8 @@ public class CalendarActivity extends AppCompatActivity implements Navigator {
                 v = tableRow4.getChildAt(i);
             } else if (rowCount == 5) {
                 v = tableRow5.getChildAt(i);
+            }  else if (rowCount == 6) {
+                v = tableRow6.getChildAt(i);
             }
             //do something with your child element
             dummy = (TextView) v;

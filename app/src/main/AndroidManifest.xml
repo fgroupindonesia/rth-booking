@@ -12,23 +12,46 @@
         android:icon="@mipmap/icon_rth_booking"
         android:label="@string/app_name"
         android:logo="@mipmap/icon_rth_booking"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/icon_rth_booking"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:requestLegacyExternalStorage="true"
         android:usesCleartextTraffic="true">
-        <activity android:name="booking1.rth.web.id.DateSpecificActivity" />
-        <activity android:name="booking1.rth.web.id.UserProfileActivity" />
-        <activity android:name="booking1.rth.web.id.CalendarActivity" />
-        <activity android:name="booking1.rth.web.id.LoginActivity" />
-        <activity android:name="booking1.rth.web.id.BookingScheduleActivity" />
-        <activity android:name="booking1.rth.web.id.PickDateActivity" />
-        <activity android:name="booking1.rth.web.id.ClientProfileActivity" />
-        <activity android:name="booking1.rth.web.id.TutorialActivity" />
-        <activity android:name="booking1.rth.web.id.WelcomeActivity" />
-        <activity android:name="booking1.rth.web.id.LoadingActivity">
+        <activity android:name=".MemberActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".DateSpecificActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".UserProfileActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".CalendarActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".LoginActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".BookingScheduleActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".PickDateActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ClientProfileActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".TutorialActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".WelcomeActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".LoadingActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

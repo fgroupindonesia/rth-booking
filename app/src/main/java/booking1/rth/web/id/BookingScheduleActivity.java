@@ -166,6 +166,7 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
         // getting dateChosen here
         updateText();
 
+        // ask the server what schedule available for this specific date
         callWeb();
 
         // request to server another API REST CALL
@@ -672,8 +673,8 @@ public class BookingScheduleActivity extends AppCompatActivity implements Naviga
                     if (object.getDate_chosen().equalsIgnoreCase(dateServerFormat)) {
                         if (object.getGender_therapist() == gender && object.getStatus() == 1) {
                             showLoading(false);
-                            //showBookingTable(false);
-                            //showTreatmentOptions(false);
+                            showBookingTable(false);
+                            showTreatmentOptions(false);
                             showWarningRuqyah(true);
                             ShowDialog.message(this, "ini hari ruqyah lho!");
                         }

@@ -17,15 +17,16 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
+import helper.CartHelper;
 import object.Keys;
 import shared.UserData;
 
 public class PickDateActivity extends AppCompatActivity {
 
-    TextView textViewBulanTahun;
+    TextView textViewBulanTahun, textViewNamaPasien;
     Spinner spinnerPickDate;
     ImageView imageViewUserProfile, imageViewProfesi;
-
+    CartHelper chelp;
 
     String dateText;
 
@@ -36,6 +37,9 @@ public class PickDateActivity extends AppCompatActivity {
 
         // stored for future usage
         UserData.setPreference(this);
+
+
+        textViewNamaPasien = (TextView) findViewById(R.id.textViewNamaPasien);
 
         spinnerPickDate = (Spinner) findViewById(R.id.spinnerPickDate);
         textViewBulanTahun = (TextView) findViewById(R.id.textViewBulanTahun);
@@ -48,6 +52,35 @@ public class PickDateActivity extends AppCompatActivity {
         updateMonth();
         generate2DateForWeeksAhead();
         updateUserProfile();
+
+        // show the name of the person if multi
+        // or if not multi (single) just let it be
+        showPatientName();
+
+    }
+
+    private String bookingMode;
+    private void showPatientName(){
+        // check first is this single booking mode
+        // or multi booking mode?
+        bookingMode = getIntent().getStringExtra(Keys.BOOKING_MODE);
+
+        String namaOrang = null;
+
+        if(bookingMode.equalsIgnoreCase(Keys.MODE_BOOKING_MULTI_ORDER)){
+            // this is the multibooking
+           String dataOrder = UserData.getPreferenceString(Keys.DATA_MEMBER_BOOKING);
+
+            chelp = new CartHelper(dataOrder);
+            namaOrang = chelp.getIncompletedMember();
+
+        }else {
+            // this is a single bookingmode
+            namaOrang = UserData.getPreferenceString(Keys.USERNAME);
+
+        }
+
+        textViewNamaPasien.setText(" untuk " + namaOrang);
     }
 
     private void centerTitleApp(){
